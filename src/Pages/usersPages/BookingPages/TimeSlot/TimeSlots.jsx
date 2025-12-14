@@ -1,24 +1,105 @@
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import CalendarBox from "./Components/CalendarBox"
 import ChangeProfessional from "./Components/ChangeProfessional"
 import { useDispatch, useSelector } from "react-redux"
 import { fetchGetDayScheduleData } from "../../../../store/slice/DaySchedualeDataState/DaySchedulDataApi"
+import { setSelectedDate, setSelectedTime } from "../../../../store/slice/BookingDataState/BookingDataSlice"
 
 
 const TimeSlots = () => {
 
     const dispatch = useDispatch()
 
-    const { bookingData } = useSelector(state => state.bookingData)
+    const { selectedDate, selectedTime, professional } = useSelector(state => state.bookingData)
     const { dayScheduleData } = useSelector((state) => state.dayScheduleData)
 
     useEffect(() => {
-        if (!bookingData || bookingData.length === 0) {
+        if (!dayScheduleData || dayScheduleData.length === 0) {
             dispatch(fetchGetDayScheduleData())
         }
-    }, [dispatch])
+    }, [dispatch, dayScheduleData])
 
     console.log(dayScheduleData);
+
+    // Handle date selection from calendar
+    const handleDateSelect = (date) => {
+        dispatch(setSelectedDate(date))
+        // Clear selected time when date changes
+        dispatch(setSelectedTime(null))
+    }
+
+    // Handle time slot selection
+    const handleTimeSelect = (time) => {
+        dispatch(setSelectedTime(time))
+    }
+
+    // Generate time slots based on selected date and dayScheduleData
+    const availableTimeSlots = useMemo(() => {
+        if (!selectedDate || !dayScheduleData || dayScheduleData.length === 0 || !professional) {
+            return []
+        }
+
+        // Find schedule for the selected date and professional
+        const scheduleForDate = dayScheduleData.find(schedule => {
+            const scheduleDate = new Date(schedule.date || schedule.day || schedule.schedule_date)
+            const selectedDateObj = new Date(selectedDate)
+            const dateMatches = scheduleDate.toDateString() === selectedDateObj.toDateString()
+            
+            // Check if schedule is for the selected professional
+            const employeeMatches = schedule.employee?._id === professional._id || 
+                                   schedule.employeeId === professional._id ||
+                                   schedule.employee === professional._id ||
+                                   !schedule.employee // If no employee filter, show all
+            return dateMatches && employeeMatches
+        })
+
+        if (!scheduleForDate) {
+            return []
+        }
+
+        // Get start_time and end_time from schedule
+        const startTime = scheduleForDate.start_time || scheduleForDate.startTime || '09:00'
+        const endTime = scheduleForDate.end_time || scheduleForDate.endTime || '18:00'
+
+        // Get booked slots from schedule
+        const bookedSlots = scheduleForDate.booked_slots || 
+                           scheduleForDate.bookedSlots || 
+                           scheduleForDate.bookings || 
+                           scheduleForDate.booked_times ||
+                           []
+
+        // Generate all time slots with 15-minute intervals from start_time to end_time
+        const allSlots = []
+        const start = new Date(`${selectedDate}T${startTime}:00`)
+        const end = new Date(`${selectedDate}T${endTime}:00`)
+        
+        let current = new Date(start)
+        while (current < end) {
+            const hours = current.getHours().toString().padStart(2, '0')
+            const minutes = current.getMinutes().toString().padStart(2, '0')
+            const timeString = `${hours}:${minutes}`
+            
+            // Check if this slot is booked
+            const isBooked = bookedSlots.some(booked => {
+                if (typeof booked === 'string') {
+                    return booked === timeString || booked.startsWith(timeString)
+                }
+                if (booked?.time) {
+                    return booked.time === timeString || booked.time.startsWith(timeString)
+                }
+                return false
+            })
+            
+            allSlots.push({
+                time: timeString,
+                isBooked: isBooked
+            })
+            
+            current.setMinutes(current.getMinutes() + 15)
+        }
+        
+        return allSlots
+    }, [selectedDate, dayScheduleData, professional])
 
     return (
         <div>
@@ -30,51 +111,39 @@ const TimeSlots = () => {
                     <ChangeProfessional />
                     <div className="flex items-start gap-6 ">
                         <div className='w-3/6'>
-                            <CalendarBox />
+                            <CalendarBox 
+                                onDateSelect={handleDateSelect}
+                                selectedDate={selectedDate}
+                            />
                         </div>
                         <div className="flex flex-wrap items-center gap-2 ">
-                            <button
-                                type="button"
-                                className="text-[14px] font-semibold p-3 border-[2px] border-gray rounded-full disabled:bg-gray-400 disabled:cursor-not-allowed"
-                            >
-                                10:00
-                            </button>
-                            <button
-                                type="button"
-                                className="text-[14px] font-semibold p-3 border-[2px] border-gray rounded-full disabled:bg-gray-400 disabled:cursor-not-allowed"
-                            >
-                                10:15
-                            </button>
-                            <button
-                                type="button"
-                                className="text-[14px] font-semibold p-3 border-[2px] border-gray rounded-full disabled:bg-gray-400 disabled:cursor-not-allowed"
-                            >
-                                10:30
-                            </button>
-                            <button
-                                type="button"
-                                className="text-[14px] font-semibold p-3 border-[2px] border-gray rounded-full disabled:bg-gray-400 disabled:cursor-not-allowed"
-                            >
-                                10:45
-                            </button>
-                            <button
-                                type="button"
-                                className="text-[14px] font-semibold p-3 border-[2px] border-gray rounded-full disabled:bg-gray-400 disabled:cursor-not-allowed"
-                            >
-                                11:00
-                            </button>
-                            <button
-                                type="button"
-                                className="text-[14px] font-semibold p-3 border-[2px] border-gray rounded-full disabled:bg-gray-400 disabled:cursor-not-allowed"
-                            >
-                                11:15
-                            </button>
-                            <button
-                                type="button"
-                                className="text-[14px] font-semibold p-3 border-[2px] border-gray rounded-full disabled:bg-gray-400 disabled:cursor-not-allowed"
-                            >
-                                11:30
-                            </button>
+                            {availableTimeSlots.length > 0 ? (
+                                availableTimeSlots.map((slot, index) => (
+                                    <button
+                                        key={index}
+                                        type="button"
+                                        onClick={() => !slot.isBooked && handleTimeSelect(slot.time)}
+                                        disabled={slot.isBooked}
+                                        className={`text-[14px] font-semibold p-3 border-[2px] rounded-full transition-colors ${
+                                            slot.isBooked
+                                                ? 'bg-gray-400 text-white border-gray-400 cursor-not-allowed opacity-50'
+                                                : selectedTime === slot.time
+                                                ? 'bg-blue-500 text-white border-blue-500'
+                                                : 'border-gray hover:border-blue-300 hover:bg-blue-50'
+                                        }`}
+                                    >
+                                        {slot.time}
+                                    </button>
+                                ))
+                            ) : (
+                                <p className="text-gray-500">
+                                    {!professional 
+                                        ? 'Please select a professional first' 
+                                        : !selectedDate 
+                                        ? 'Please select a date first' 
+                                        : 'No available time slots for this date'}
+                                </p>
+                            )}
                         </div>
                     </div>
                     {/* <button

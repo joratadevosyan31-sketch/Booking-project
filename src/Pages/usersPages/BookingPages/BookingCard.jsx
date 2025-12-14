@@ -13,7 +13,7 @@ const BookingCard = () => {
     const [isBookingSuccess, setIsBookingSuccess] = useState(false)
     const [isLoginOpen, setIsLoginOpen] = useState(false)
 
-    const { selectedSubservice, professional } = useSelector((state) => state.bookingData);
+    const { selectedSubservices, professional } = useSelector((state) => state.bookingData);
 
     useEffect(() => {
         if (isLoginOpen || isBookingSuccess) {
@@ -26,16 +26,17 @@ const BookingCard = () => {
         }
     }, [isLoginOpen, isBookingSuccess])
 
+    // Calculate total price and duration
+    const totalPrice = selectedSubservices?.reduce((sum, sub) => sum + (sub.price || 0), 0) || 0;
+    const totalDuration = selectedSubservices?.reduce((sum, sub) => sum + (sub.duration || 0), 0) || 0;
+
     const HandleChangePage = () => {
-        if (selectedSubservice && selectedSubservice.length !== 0) {
+        if (selectedSubservices && selectedSubservices.length > 0) {
             navigate("select-professional")
         }
         if (professional && professional.length !== 0) {
             navigate("time-slot")
         }
-        // if (selectedSubservice && professional && location.pathname === "/booking/select-professional") {
-        //     setIsLoginOpen(true)
-        // }
     }
 
 
@@ -43,36 +44,39 @@ const BookingCard = () => {
         <>
             <div className='border-[2px] border-gray rounded-[12px] p-[20px] sticky top-28 h-fit '>
                 <BookingSalonInfo />
-                <div className='py-6 overflow-y-auto'>
-                    {selectedSubservice ? (
+                <div className='py-6 overflow-y-auto max-h-[400px]'>
+                    {selectedSubservices && selectedSubservices.length > 0 ? (
                         <div className='flex flex-col gap-3'>
-                            <div className='flex items-center justify-between  border-b-gray pb-3'>
-                                <div className='flex flex-col gap-1'>
-                                    <p className='text-[20px] font-medium text-gray-950'>{selectedSubservice?.name}</p>
-                                    {
-                                        professional ? (
+                            {selectedSubservices.map((sub, index) => (
+                                <div key={sub._id || index} className='flex items-center justify-between border-b border-gray pb-3'>
+                                    <div className='flex flex-col gap-1'>
+                                        <p className='text-[20px] font-medium text-gray-950'>{sub?.name}</p>
+                                        {index === 0 && professional && (
                                             <p className='text-[20px] font-medium text-gray-600'>{`With ${professional?.name}`}</p>
-                                        ) : (
-                                            null
-                                        )
-                                    }
-                                    <p className='text-[16px] text-gray-600'>{selectedSubservice?.duration} min</p>
+                                        )}
+                                        <p className='text-[16px] text-gray-600'>{sub?.duration} min</p>
+                                    </div>
+                                    <p className='text-[20px] font-medium text-gray-950'>{sub?.price} AMD</p>
                                 </div>
-                                <p className='text-[20px] font-medium text-gray-950'>{selectedSubservice?.price} AMD</p>
-                            </div>
+                            ))}
                         </div>
                     ) : (
                         <p className='text-gray-950'>no services selected</p>
                     )}
                 </div>
                 <div className='flex items-center justify-between border-t-2 border-t-gray py-6'>
-                    <span>Total</span>
-                    <span>{selectedSubservice ? `${selectedSubservice.price} AMD` : 'free'}</span>
+                    <div className='flex flex-col gap-1'>
+                        <span>Total</span>
+                        {selectedSubservices && selectedSubservices.length > 0 && (
+                            <span className='text-[14px] text-gray-600'>{totalDuration} min</span>
+                        )}
+                    </div>
+                    <span>{totalPrice > 0 ? `${totalPrice} AMD` : 'free'}</span>
                 </div>
                 <div className='flex items-center justify-center'>
                     <button
                         onClick={HandleChangePage}
-                        disabled={!selectedSubservice || location.pathname === "/booking/select-professional" && !professional}
+                        disabled={!selectedSubservices || selectedSubservices.length === 0 || (location.pathname === "/booking/select-professional" && !professional)}
                         type='button'
                         className='w-full text-white text-[24px] bg-black py-[20px] px- rounded-[25px] cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed'
                     >

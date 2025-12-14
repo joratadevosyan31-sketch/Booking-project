@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Slider from "react-slick"
 import { fetchGetServicesData } from "../../../../../../store/slice/ServicesDataState/ServicesApi";
-import { setProfessional, setSelectedSubservice } from "../../../../../../store/slice/BookingDataState/BookingDataSlice";
+import { setProfessional, toggleSubservice } from "../../../../../../store/slice/BookingDataState/BookingDataSlice";
 import { useNavigate } from "react-router";
 
 const btnSettings = {
@@ -61,7 +61,7 @@ const Services = () => {
     };
 
     const handleSelect = (sub) => {
-        dispatch(setSelectedSubservice(sub));
+        dispatch(toggleSubservice(sub));
         dispatch(setProfessional(null))
         navigate("/booking");
     }

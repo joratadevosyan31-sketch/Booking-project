@@ -7,12 +7,18 @@ import { data } from 'react-router';
 dayjs.extend(dayLocaleData);
 
 
-const CalendarBox = () => {
+const CalendarBox = ({ onDateSelect, selectedDate }) => {
 
     const { token } = theme.useToken();
 
     const onPanelChange = (value, mode) => {
         console.log(value.format('YYYY-MM-DD'), mode);
+    };
+
+    const onDateChange = (value) => {
+        if (onDateSelect) {
+            onDateSelect(value.format('YYYY-MM-DD'));
+        }
     };
 
     const wrapperStyle = {
@@ -25,6 +31,8 @@ const CalendarBox = () => {
         <div >
             <Calendar
                 fullscreen={false}
+                value={selectedDate ? dayjs(selectedDate) : undefined}
+                onChange={onDateChange}
                 headerRender={({ value, type, onChange, onTypeChange }) => {
                     const year = value.year();
                     const month = value.month();

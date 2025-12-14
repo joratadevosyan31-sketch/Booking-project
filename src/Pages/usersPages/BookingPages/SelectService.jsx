@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchGetServicesData } from "../../../store/slice/ServicesDataState/ServicesApi";
-import { setProfessional, setSelectedSubservice } from "../../../store/slice/BookingDataState/BookingDataSlice";
+import { setProfessional, toggleSubservice, clearSelectedSubservices } from "../../../store/slice/BookingDataState/BookingDataSlice";
 import PluseIcon from "../../../Components/icons/PluseIcon";
 import CheckedIcon from "../../../Components/icons/CheckedIcon";
 
@@ -39,11 +39,9 @@ const SelectService = () => {
 
     const dispatch = useDispatch();
     const { servicesData } = useSelector((state) => state.servicesData);
-    const { selectedSubservice } = useSelector((state) => state.bookingData);
+    const { selectedSubservices } = useSelector((state) => state.bookingData);
     const [selectedService, setSelectedService] = useState(null);
     const [active, setActive] = useState(null);
-
-    console.log(selectedSubservice.service);
 
     useEffect(() => {
         if (!servicesData || servicesData.length === 0) {
@@ -52,22 +50,48 @@ const SelectService = () => {
     }, [dispatch, servicesData]);
 
     useEffect(() => {
-        if (servicesData && servicesData.length > 0 && !selectedService) {
-            const selectedService = servicesData.find(ser => ser._id === selectedSubservice.service)
-            setSelectedService(selectedService);
-            setActive(selectedSubservice.service)
+        if (servicesData && servicesData.length > 0 && selectedSubservices && selectedSubservices.length > 0) {
+            const firstSubservice = selectedSubservices[0];
+            const serviceId = firstSubservice.service || firstSubservice.service?._id;
+            const foundService = servicesData.find(ser => ser._id === serviceId);
+            if (foundService && !selectedService) {
+                setSelectedService(foundService);
+                setActive(serviceId);
+            }
+        } else if (servicesData && servicesData.length > 0 && !selectedService) {
+            // If no subservices selected, default to first service
+            setSelectedService(servicesData[0]);
+            setActive(servicesData[0]._id);
         }
-    }, [servicesData, selectedService]);
+    }, [servicesData, selectedSubservices, selectedService]);
 
     const handleFilter = (service) => {
         setSelectedService(service);
-        setActive(service._id)
+        setActive(service._id);
+        // Clear subservices when switching to a different service
+        if (selectedSubservices && selectedSubservices.length > 0) {
+            const firstSubservice = selectedSubservices[0];
+            const currentServiceId = firstSubservice.service || firstSubservice.service?._id;
+            if (currentServiceId !== service._id) {
+                dispatch(clearSelectedSubservices());
+                dispatch(setProfessional(null));
+            }
+        }
     };
 
     const handleSelectSubservice = (sub) => {
-        dispatch(setSelectedSubservice(sub));
-        dispatch(setProfessional(null))
-        // navigate("/booking", { replace: true });
+        dispatch(toggleSubservice(sub));
+        // Only clear professional if switching to different service
+        const firstSubservice = selectedSubservices && selectedSubservices.length > 0 ? selectedSubservices[0] : null;
+        if (firstSubservice) {
+            const currentServiceId = firstSubservice.service || firstSubservice.service?._id;
+            const newServiceId = sub.service || sub.service?._id;
+            if (currentServiceId !== newServiceId) {
+                dispatch(setProfessional(null));
+            }
+        } else {
+            dispatch(setProfessional(null));
+        }
     };
 
     return (
@@ -94,7 +118,7 @@ const SelectService = () => {
                 <div className="flex flex-col gap-4">
                     {
                         selectedService?.subServices?.map((sub, ind) => {
-                            const isSelected = selectedSubservice && selectedSubservice._id === sub._id;
+                            const isSelected = selectedSubservices && selectedSubservices.some(selected => selected._id === sub._id);
                             return (
                                 <div
                                     key={ind}

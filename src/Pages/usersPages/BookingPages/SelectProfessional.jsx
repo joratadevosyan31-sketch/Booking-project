@@ -8,7 +8,7 @@ const SelectProfessional = () => {
 
     const dispatch = useDispatch()
 
-    const { selectedSubservice, professional } = useSelector(state => state.bookingData)
+    const { selectedSubservices, professional } = useSelector(state => state.bookingData)
     const { employeesData } = useSelector(state => state.employeesData)
 
     useEffect(() => {
@@ -19,9 +19,16 @@ const SelectProfessional = () => {
 
     console.log(employeesData);
 
-    const matchedEmployee = employeesData.filter(emp =>
-        emp.subServices.some(sub => sub._id === selectedSubservice._id)
-    );
+    // Filter employees who can provide ALL selected subservices
+    const matchedEmployee = employeesData.filter(emp => {
+        if (!selectedSubservices || selectedSubservices.length === 0) {
+            return false;
+        }
+        // Check if employee has all selected subservices
+        return selectedSubservices.every(selectedSub => 
+            emp.subServices.some(empSub => empSub._id === selectedSub._id)
+        );
+    });
 
     const handleSelectProfesional = (prof) => {
         dispatch(setProfessional(prof))

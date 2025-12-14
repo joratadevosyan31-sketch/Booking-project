@@ -2,17 +2,19 @@ export const loadBookingFromLocalStorage = () => {
     try {
         const serializedState = localStorage.getItem('bookingData');
         if (!serializedState) {
-            return {
-                selectedSubservice: null,
-                professional: null,
-            };
+        return {
+            selectedSubservices: [],
+            professional: null,
+        };
         }
         return JSON.parse(serializedState);
     } catch (err) {
         console.error('Error loading from localStorage:', err);
         return {
-            selectedSubservice: null,
+            selectedSubservices: [],
             professional: null,
+            selectedDate: null,
+            selectedTime: null,
         };
     }
 };
