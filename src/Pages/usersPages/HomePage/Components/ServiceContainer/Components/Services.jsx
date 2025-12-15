@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Slider from "react-slick"
 import { fetchGetServicesData } from "../../../../../../store/slice/ServicesDataState/ServicesApi";
-import { setProfessional, toggleSubservice } from "../../../../../../store/slice/BookingDataState/BookingDataSlice";
+import { setProfessional, toggleSubservice } from "../../../../../../store/slice/BookingCardDataState/BookingCardDataSlice";
 import { useNavigate } from "react-router";
 
 const btnSettings = {

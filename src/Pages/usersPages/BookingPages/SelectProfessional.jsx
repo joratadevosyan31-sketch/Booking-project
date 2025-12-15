@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { fetchGetEmployeesData } from "../../../store/slice/EmployeesDataState/EmployeeApi"
-import { setProfessional } from "../../../store/slice/BookingDataState/BookingDataSlice"
+import { setProfessional } from "../../../store/slice/BookingCardDataState/BookingCardDataSlice"
 import CheckedIcon from "../../../Components/icons/CheckedIcon"
 
 const SelectProfessional = () => {
 
     const dispatch = useDispatch()
 
-    const { selectedSubservices, professional } = useSelector(state => state.bookingData)
+    const { selectedSubservices, professional } = useSelector(state => state.bookingCardData)
     const { employeesData } = useSelector(state => state.employeesData)
 
     useEffect(() => {
@@ -19,13 +19,11 @@ const SelectProfessional = () => {
 
     console.log(employeesData);
 
-    // Filter employees who can provide ALL selected subservices
     const matchedEmployee = employeesData.filter(emp => {
         if (!selectedSubservices || selectedSubservices.length === 0) {
             return false;
         }
-        // Check if employee has all selected subservices
-        return selectedSubservices.every(selectedSub => 
+        return selectedSubservices.every(selectedSub =>
             emp.subServices.some(empSub => empSub._id === selectedSub._id)
         );
     });

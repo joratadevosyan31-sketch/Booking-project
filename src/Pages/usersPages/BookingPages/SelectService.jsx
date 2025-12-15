@@ -1,9 +1,8 @@
 import Slider from "react-slick"
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { fetchGetServicesData } from "../../../store/slice/ServicesDataState/ServicesApi";
-import { setProfessional, toggleSubservice, clearSelectedSubservices } from "../../../store/slice/BookingDataState/BookingDataSlice";
+import { setProfessional, toggleSubservice, clearSelectedSubservices } from "../../../store/slice/BookingCardDataState/BookingCardDataSlice";
 import PluseIcon from "../../../Components/icons/PluseIcon";
 import CheckedIcon from "../../../Components/icons/CheckedIcon";
 
@@ -39,7 +38,7 @@ const SelectService = () => {
 
     const dispatch = useDispatch();
     const { servicesData } = useSelector((state) => state.servicesData);
-    const { selectedSubservices } = useSelector((state) => state.bookingData);
+    const { selectedSubservices } = useSelector((state) => state.bookingCardData);
     const [selectedService, setSelectedService] = useState(null);
     const [active, setActive] = useState(null);
 

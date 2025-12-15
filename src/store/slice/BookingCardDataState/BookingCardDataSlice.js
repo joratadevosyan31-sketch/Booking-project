@@ -3,10 +3,10 @@ import {
     loadBookingFromLocalStorage,
     updateBookingInLocalStorage,
     clearBookingFromLocalStorage
-} from "./BookingApi";
+} from "./BookingCardApi";
 
-const BookingDataSlice = createSlice({
-    name: "bookingData",
+const BookingCardDataSlice = createSlice({
+    name: "bookingCardData",
     initialState: loadBookingFromLocalStorage(),
 
     reducers: {
@@ -14,7 +14,7 @@ const BookingDataSlice = createSlice({
         // Ensures all subservices are from the same service
         toggleSubservice: (state, action) => {
             const subservice = action.payload;
-            
+
             // If no subservices selected, add this one
             if (!state.selectedSubservices || state.selectedSubservices.length === 0) {
                 state.selectedSubservices = [subservice];
@@ -27,7 +27,7 @@ const BookingDataSlice = createSlice({
             // Check if all existing subservices are from the same service as the new one
             const firstSubserviceService = state.selectedSubservices[0].service?._id || state.selectedSubservices[0].service;
             const newSubserviceService = subservice.service?._id || subservice.service;
-            
+
             // If trying to add subservice from different service, replace all
             if (firstSubserviceService !== newSubserviceService) {
                 state.selectedSubservices = [subservice];
@@ -107,6 +107,6 @@ const BookingDataSlice = createSlice({
     }
 });
 
-export const { setSelectedSubservice, toggleSubservice, clearSelectedSubservices, setProfessional, setSelectedDate, setSelectedTime, clearBooking } = BookingDataSlice.actions;
+export const { setSelectedSubservice, toggleSubservice, clearSelectedSubservices, setProfessional, setSelectedDate, setSelectedTime, clearBooking } = BookingCardDataSlice.actions;
 
-export const bookingDataReducer = BookingDataSlice.reducer;
+export const bookingCardReducer = BookingCardDataSlice.reducer;

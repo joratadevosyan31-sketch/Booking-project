@@ -2,7 +2,7 @@ import { Select } from "antd";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchGetEmployeesData } from "../../../../../store/slice/EmployeesDataState/EmployeeApi";
-import { setProfessional } from "../../../../../store/slice/BookingDataState/BookingDataSlice";
+import { setProfessional } from "../../../../../store/slice/BookingCardDataState/BookingCardDataSlice";
 
 const ChangeProfessional = () => {
 
@@ -10,7 +10,7 @@ const ChangeProfessional = () => {
     const dispatch = useDispatch()
 
     const { employeesData } = useSelector(state => state.employeesData)
-    const { selectedSubservices, professional } = useSelector(state => state.bookingData)
+    const { selectedSubservices, professional } = useSelector(state => state.bookingCardData)
 
     useEffect(() => {
         if (!employeesData || employeesData.length === 0) {
@@ -18,13 +18,12 @@ const ChangeProfessional = () => {
         }
     }, [dispatch])
 
-    // Filter employees who can provide ALL selected subservices
     const matchedEmployee = employeesData.filter(emp => {
         if (!selectedSubservices || selectedSubservices.length === 0) {
             return false;
         }
-        // Check if employee has all selected subservices
-        return selectedSubservices.every(selectedSub => 
+
+        return selectedSubservices.every(selectedSub =>
             emp.subServices.some(empSub => empSub._id === selectedSub._id)
         );
     });

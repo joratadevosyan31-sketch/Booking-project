@@ -13,7 +13,7 @@ const BookingCard = () => {
     const [isBookingSuccess, setIsBookingSuccess] = useState(false)
     const [isLoginOpen, setIsLoginOpen] = useState(false)
 
-    const { selectedSubservices, professional } = useSelector((state) => state.bookingData);
+    const { selectedSubservices, professional } = useSelector((state) => state.bookingCardData);
 
     useEffect(() => {
         if (isLoginOpen || isBookingSuccess) {
@@ -51,9 +51,11 @@ const BookingCard = () => {
                                 <div key={sub._id || index} className='flex items-center justify-between border-b border-gray pb-3'>
                                     <div className='flex flex-col gap-1'>
                                         <p className='text-[20px] font-medium text-gray-950'>{sub?.name}</p>
-                                        {index === 0 && professional && (
-                                            <p className='text-[20px] font-medium text-gray-600'>{`With ${professional?.name}`}</p>
-                                        )}
+                                        {
+                                            professional && (
+                                                <p className='text-[20px] font-medium text-gray-600'>{`With ${professional?.name}`}</p>
+                                            )
+                                        }
                                         <p className='text-[16px] text-gray-600'>{sub?.duration} min</p>
                                     </div>
                                     <p className='text-[20px] font-medium text-gray-950'>{sub?.price} AMD</p>
