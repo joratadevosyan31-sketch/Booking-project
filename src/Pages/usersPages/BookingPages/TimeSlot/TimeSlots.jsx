@@ -15,13 +15,8 @@ const TimeSlots = () => {
     const { availableDays, slotsByDay } = useSelector(state => state.availableSlotsData)
 
     useEffect(() => {
-        if (!slotsByDay) {
-        }
         dispatch(fetchGetAvailableSlots({ empId: professional?._id }))
     }, [dispatch])
-
-    console.log("by day", slotsByDay);
-    console.log("available days", availableDays);
 
     const handleDateSelect = (date) => {
         dispatch(setSelectedDate(date))
@@ -40,7 +35,7 @@ const TimeSlots = () => {
                 </div>
                 <div className="flex flex-col items-start  gap-8">
                     <ChangeProfessional />
-                    <div className="flex items-start gap-6 ">
+                    <div className="flex flex-col items-start gap-6 ">
                         <div className='w-3/6'>
                             <CalendarBox
                                 // disabledDate={(date) => {
@@ -48,18 +43,21 @@ const TimeSlots = () => {
                                 //         return true
                                 //     }
                                 // }}
+                                availableDays={availableDays}
                                 onDateSelect={handleDateSelect}
                                 selectedDate={selectedDate}
                             />
                         </div>
-                        <TimeBox
-                            slotsByDay={slotsByDay}
-                            // availableTimeSlots={availableTimeSlots}
-                            selectedTime={selectedTime}
-                            handleTimeSelect={handleTimeSelect}
-                            professional={professional}
-                            selectedDate={selectedDate}
-                        />
+                        <div className="">
+                            <TimeBox
+                                slotsByDay={slotsByDay}
+                                // availableTimeSlots={availableTimeSlots}
+                                selectedTime={selectedTime}
+                                handleTimeSelect={handleTimeSelect}
+                                professional={professional}
+                                selectedDate={selectedDate}
+                            />
+                        </div>
                     </div>
                 </div>
                 <div>

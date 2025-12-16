@@ -2,14 +2,22 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { instance } from "../../axiosConfig/AxiosConfig";
 
 
-export const fetchGetAuthData = createAsyncThunk("authData/fetchGetAuthData", async () => {
-    try {
-        const response = await instance.get("/customers/one")
-        const result = response.data
+export const fetchVerifyUser = createAsyncThunk("authData/fetchVerifyUser", async ({ user }) => {
+    console.log(user);
 
-        return result
+    try {
+        const responce = await instance.post("/auth/verify", {
+            body: {
+                phone: user.phone,
+                firebaseUid: user.firebaseUid
+            }
+        })
+
+        console.log(responce.data);
+
+        const result = responce.data
     } catch (error) {
-        console.error("fetchGetEmployeesData error:", error);
+        console.error("fetchVerifyUser error:", error);
         throw error;
     }
 })

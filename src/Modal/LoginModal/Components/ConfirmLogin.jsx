@@ -1,8 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { verifySMSCode } from "../../../firebase";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchVerifyUser } from "../../../store/slice/AuthDataState/AuthDataApi";
 
 const ConfirmLogin = ({ confirmationResult, phoneNumber, onSuccess, onBack }) => {
+
+
+    const dispatch = useDispatch()
+    const { token } = useSelector(state => state.authData)
+
+    localStorage.setItem("token", JSON.stringify(token))
+    console.log(token);
 
     const [code, setCode] = useState(["", "", "", "", "", ""]);
     const [error, setError] = useState("");
@@ -113,6 +121,13 @@ const ConfirmLogin = ({ confirmationResult, phoneNumber, onSuccess, onBack }) =>
             localStorage.removeItem("tempPhoneNumber"); // Clean up temp data
 
             onSuccess(user);
+
+            dispatch(fetchVerifyUser({
+                user: {
+                    phone: user.phoneNumber,
+                    firebaseUid: user.uid
+                }
+            }))
 
         } catch (err) {
             console.error("Verification error:", err);

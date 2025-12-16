@@ -13,7 +13,7 @@ const BookingCard = () => {
     const [isBookingSuccess, setIsBookingSuccess] = useState(false)
     const [isLoginOpen, setIsLoginOpen] = useState(false)
 
-    const { selectedSubservices, professional } = useSelector((state) => state.bookingCardData);
+    const { selectedSubservices, professional, selectedDate, selectedTime } = useSelector((state) => state.bookingCardData);
 
     useEffect(() => {
         if (isLoginOpen || isBookingSuccess) {
@@ -26,7 +26,6 @@ const BookingCard = () => {
         }
     }, [isLoginOpen, isBookingSuccess])
 
-    // Calculate total price and duration
     const totalPrice = selectedSubservices?.reduce((sum, sub) => sum + (sub.price || 0), 0) || 0;
     const totalDuration = selectedSubservices?.reduce((sum, sub) => sum + (sub.duration || 0), 0) || 0;
 
@@ -68,6 +67,9 @@ const BookingCard = () => {
                 </div>
                 <div className='flex items-center justify-between border-t-2 border-t-gray py-6'>
                     <div className='flex flex-col gap-1'>
+                        <p className='text-[20px] font-medium text-gray-600'>
+                            {selectedDate && selectedTime ? `${selectedDate} at ${selectedTime}` : "No date/time selected"}
+                        </p>
                         <span>Total</span>
                         {selectedSubservices && selectedSubservices.length > 0 && (
                             <span className='text-[14px] text-gray-600'>{totalDuration} min</span>
