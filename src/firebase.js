@@ -22,8 +22,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-console.log(auth, "bj");
-console.log(app);
+// console.log(auth, "bj");
+// console.log(app);
 
 
 // Setup reCAPTCHA verifier for phone authentication
@@ -38,7 +38,7 @@ const setupRecaptcha = (containerId = "recaptcha-container") => {
       size: 'invisible', // or 'normal' for visible widget
       callback: () => {
         // This will be called when reCAPTCHA is solved
-        console.log('reCAPTCHA solved');
+        // console.log('reCAPTCHA solved');
       }
     }
   );
@@ -91,4 +91,4 @@ export {
 };
 
 
-console.log(app);
+// console.log(app);

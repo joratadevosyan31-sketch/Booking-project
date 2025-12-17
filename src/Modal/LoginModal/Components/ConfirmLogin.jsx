@@ -5,12 +5,7 @@ import { fetchVerifyUser } from "../../../store/slice/AuthDataState/AuthDataApi"
 
 const ConfirmLogin = ({ confirmationResult, phoneNumber, onSuccess, onBack }) => {
 
-
     const dispatch = useDispatch()
-    const { token } = useSelector(state => state.authData)
-
-    localStorage.setItem("token", JSON.stringify(token))
-    console.log(token);
 
     const [code, setCode] = useState(["", "", "", "", "", ""]);
     const [error, setError] = useState("");
@@ -103,6 +98,7 @@ const ConfirmLogin = ({ confirmationResult, phoneNumber, onSuccess, onBack }) =>
             return;
         }
 
+
         setLoading(true);
         setError("");
 
@@ -110,24 +106,10 @@ const ConfirmLogin = ({ confirmationResult, phoneNumber, onSuccess, onBack }) =>
             if (!confirmationResult) {
                 throw new Error("Verification session expired. Please try again.");
             }
-
             const user = await verifySMSCode(confirmationResult, verificationCode);
+            localStorage.removeItem("tempPhoneNumber");
 
-            console.log("User authenticated successfully:", user);
-
-
-            localStorage.setItem("user", JSON.stringify(user));
-            localStorage.setItem("isAuthenticated", "true");
-            localStorage.removeItem("tempPhoneNumber"); // Clean up temp data
-
-            onSuccess(user);
-
-            dispatch(fetchVerifyUser({
-                user: {
-                    phone: user.phoneNumber,
-                    firebaseUid: user.uid
-                }
-            }))
+            onSuccess({ user, verificationCode });
 
         } catch (err) {
             console.error("Verification error:", err);
@@ -163,7 +145,7 @@ const ConfirmLogin = ({ confirmationResult, phoneNumber, onSuccess, onBack }) =>
         setResendDisabled(true);
         setResendTimer(60);
 
-        console.log("Resend requested for:", phoneNumber);
+        // console.log("Resend requested for:", phoneNumber);
 
         alert(`A new verification code has been sent to ${phoneNumber}`);
     };

@@ -1,12 +1,14 @@
+
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchVerifyUser } from "./AuthDataApi";
+import { fetchVerifyUser } from "./AuthDataApi.js";
+
 
 const AuthDataSlice = createSlice({
     name: "authData",
     initialState: {
         user: null,
         firebaseUser: null,
-        token: null,
+        token: localStorage.getItem("token") ? JSON.parse(localStorage.getItem("token")) : null,
         phoneNumber: "",
         isLoading: false,
         isError: false,
@@ -16,8 +18,8 @@ const AuthDataSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchVerifyUser.pending, (state, { payload }) => {
-                state.isLoading = false;
+            .addCase(fetchVerifyUser.pending, (state) => {
+                state.isLoading = true;
             })
             .addCase(fetchVerifyUser.fulfilled, (state, { payload }) => {
                 state.token = payload.token

@@ -2,8 +2,14 @@ import LoginForm from './Components/LoginForm'
 import CloseIcon from '../../Components/icons/CloseIcon'
 import ConfirmLogin from './Components/ConfirmLogin'
 import { useState } from 'react'
+import { fetchVerifyUser } from '../../store/slice/AuthDataState/AuthDataApi'
+import { useDispatch } from 'react-redux'
+import { instance } from '../../store/axiosConfig/AxiosConfig'
 
 const Login = ({ setIsLoginOpen }) => {
+
+    const dispatch = useDispatch()
+
     const [formMode, setFormMode] = useState("login")
     const [confirmationResult, setConfirmationResult] = useState(null)
     const [phoneNumber, setPhoneNumber] = useState("")
@@ -14,14 +20,21 @@ const Login = ({ setIsLoginOpen }) => {
         }
     }
 
-    const handleAuthSuccess = (user) => {
+    const handleAuthSuccess = async ({ user, verificationCode }) => {
         // console.log("User authenticated successfully:", user)
         setIsLoginOpen(false)
 
-        localStorage.setItem("user", JSON.stringify(user))
-        localStorage.setItem("isAuthenticated", "true")
+        // localStorage.setItem("user", JSON.stringify(user))
+        // localStorage.setItem("isAuthenticated", "true")
 
-        window.location.reload()
+        const idToken = await user.getIdToken();
+
+        dispatch(fetchVerifyUser({
+            idToken: idToken,
+            verificationCode: verificationCode
+        }))
+
+        // window.location.reload()
     }
 
     const handleBackToLogin = () => {

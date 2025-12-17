@@ -5,7 +5,7 @@ export const fetchGetEmployeesData = createAsyncThunk("employeesData/fetchGetEmp
     try {
         const response = await instance.get("/employees")
         const result = response.data
-        console.log(response)
+        // console.log(response)
 
         return result
     } catch (error) {

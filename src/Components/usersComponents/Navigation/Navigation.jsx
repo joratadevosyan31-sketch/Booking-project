@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import Login from "../../../Modal/LoginModal/Login"
+import { useSelector } from "react-redux"
 
 const Navigation = () => {
 
@@ -18,17 +19,6 @@ const Navigation = () => {
         }
     }, [IsLoginOpen])
 
-    useEffect(() => {
-        const isAuth = localStorage.getItem("isAuthenticated")
-        const serc = localStorage.getItem("_grecaptcha")
-        if (isAuth && serc) {
-            setIsLoged(true)
-        }
-    }, [])
-
-    const handleSagnOut = () => {
-
-    }
 
     return (
         <>
