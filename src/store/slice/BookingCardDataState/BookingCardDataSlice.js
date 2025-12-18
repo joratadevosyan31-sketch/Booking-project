@@ -2,108 +2,120 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
     loadBookingFromLocalStorage,
     updateBookingInLocalStorage,
-    clearBookingFromLocalStorage
+    clearBookingFromLocalStorage,
+    fetchCreateBooking
 } from "./BookingCardApi";
 
 const BookingCardDataSlice = createSlice({
     name: "bookingCardData",
-    initialState: loadBookingFromLocalStorage(),
+    initialState: {
+        ...loadBookingFromLocalStorage(),
+        success: false
+    },
 
     reducers: {
-        // Toggle subservice - add if not exists, remove if exists
-        // Ensures all subservices are from the same service
+
         toggleSubservice: (state, action) => {
             const subservice = action.payload;
 
-            // If no subservices selected, add this one
-            if (!state.selectedSubservices || state.selectedSubservices.length === 0) {
-                state.selectedSubservices = [subservice];
+
+            if (!state.subServices || state.subServices.length === 0) {
+                state.subServices = [subservice];
                 updateBookingInLocalStorage({
-                    selectedSubservices: [subservice]
+                    subServices: [subservice]
                 });
                 return;
             }
 
-            // Check if all existing subservices are from the same service as the new one
-            const firstSubserviceService = state.selectedSubservices[0].service?._id || state.selectedSubservices[0].service;
+            const firstSubserviceService = state.subServices[0].service?._id || state.subServices[0].service;
             const newSubserviceService = subservice.service?._id || subservice.service;
 
-            // If trying to add subservice from different service, replace all
+
             if (firstSubserviceService !== newSubserviceService) {
-                state.selectedSubservices = [subservice];
+                state.subServices = [subservice];
                 updateBookingInLocalStorage({
-                    selectedSubservices: [subservice]
+                    subServices: [subservice]
                 });
                 return;
             }
 
-            // Check if subservice already exists
-            const existingIndex = state.selectedSubservices.findIndex(
+            const existingIndex = state.subServices.findIndex(
                 sub => sub._id === subservice._id
             );
 
             if (existingIndex >= 0) {
-                // Remove if exists
-                state.selectedSubservices = state.selectedSubservices.filter(
+                state.subServices = state.subServices.filter(
                     sub => sub._id !== subservice._id
                 );
             } else {
-                // Add if doesn't exist
-                state.selectedSubservices = [...state.selectedSubservices, subservice];
+                state.subServices = [...state.subServices, subservice];
             }
 
             updateBookingInLocalStorage({
-                selectedSubservices: state.selectedSubservices
+                subServices: state.subServices
             });
         },
 
-        // Keep old action for backward compatibility, but convert to array
         setSelectedSubservice: (state, action) => {
-            state.selectedSubservices = action.payload ? [action.payload] : [];
+            state.subServices = action.payload ? [action.payload] : [];
             updateBookingInLocalStorage({
-                selectedSubservices: state.selectedSubservices
+                subServices: state.subServices
             });
         },
 
         setProfessional: (state, action) => {
-            state.professional = action.payload;
+            state.employee = action.payload;
 
             updateBookingInLocalStorage({
-                professional: action.payload
+                employee: action.payload
             });
         },
 
         setSelectedDate: (state, action) => {
-            state.selectedDate = action.payload;
+            state.date = action.payload;
 
             updateBookingInLocalStorage({
-                selectedDate: action.payload
+                date: action.payload
             });
         },
 
         setSelectedTime: (state, action) => {
-            state.selectedTime = action.payload;
+            state.startTime = action.payload;
 
             updateBookingInLocalStorage({
-                selectedTime: action.payload
+                startTime: action.payload
             });
         },
 
         clearSelectedSubservices: (state) => {
-            state.selectedSubservices = [];
+            state.subServices = [];
             updateBookingInLocalStorage({
-                selectedSubservices: []
+                subServices: []
             });
         },
 
         clearBooking: (state) => {
-            state.selectedSubservices = [];
-            state.professional = null;
-            state.selectedDate = null;
-            state.selectedTime = null;
+            state.subServices = [];
+            state.employee = null;
+            state.date = null;
+            state.startTime = null;
 
             clearBookingFromLocalStorage();
         }
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchCreateBooking.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(fetchCreateBooking.fulfilled, (state, { payload }) => {
+                state.isLoading = false;
+                state.success = payload
+            })
+            .addCase(fetchCreateBooking.rejected, (state, { payload }) => {
+                state.isLoading = false;
+                state.isError = payload;
+            });
     }
 });
 

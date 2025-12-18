@@ -10,7 +10,7 @@ const ChangeProfessional = () => {
     const dispatch = useDispatch()
 
     const { employeesData } = useSelector(state => state.employeesData)
-    const { selectedSubservices, professional } = useSelector(state => state.bookingCardData)
+    const { subServices, employee } = useSelector(state => state.bookingCardData)
 
     useEffect(() => {
         if (!employeesData || employeesData.length === 0) {
@@ -19,11 +19,11 @@ const ChangeProfessional = () => {
     }, [dispatch])
 
     const matchedEmployee = employeesData.filter(emp => {
-        if (!selectedSubservices || selectedSubservices.length === 0) {
+        if (!subServices || subServices.length === 0) {
             return false;
         }
 
-        return selectedSubservices.every(selectedSub =>
+        return subServices.every(selectedSub =>
             emp.subServices.some(empSub => empSub._id === selectedSub._id)
         );
     });
@@ -53,7 +53,7 @@ const ChangeProfessional = () => {
         <Select
             onChange={handleChangeProfessional}
             style={{ width: 250 }}
-            defaultValue={professional._id}
+            defaultValue={employee?._id}
             options={options}
             optionLabelProp="label"
         />

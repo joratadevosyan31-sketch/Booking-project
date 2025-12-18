@@ -11,11 +11,11 @@ const TimeSlots = () => {
 
     const dispatch = useDispatch()
 
-    const { selectedDate, selectedTime, professional } = useSelector(state => state.bookingCardData)
+    const { date, startTime, employee } = useSelector(state => state.bookingCardData)
     const { availableDays, slotsByDay } = useSelector(state => state.availableSlotsData)
 
     useEffect(() => {
-        dispatch(fetchGetAvailableSlots({ empId: professional?._id }))
+        dispatch(fetchGetAvailableSlots({ empId: employee?._id }))
     }, [dispatch])
 
     const handleDateSelect = (date) => {
@@ -45,17 +45,17 @@ const TimeSlots = () => {
                                 // }}
                                 availableDays={availableDays}
                                 onDateSelect={handleDateSelect}
-                                selectedDate={selectedDate}
+                                date={date}
                             />
                         </div>
                         <div className="">
                             <TimeBox
                                 slotsByDay={slotsByDay}
                                 // availableTimeSlots={availableTimeSlots}
-                                selectedTime={selectedTime}
+                                startTime={startTime}
                                 handleTimeSelect={handleTimeSelect}
-                                professional={professional}
-                                selectedDate={selectedDate}
+                                employee={employee}
+                                date={date}
                             />
                         </div>
                     </div>

@@ -38,7 +38,7 @@ const SelectService = () => {
 
     const dispatch = useDispatch();
     const { servicesData } = useSelector((state) => state.servicesData);
-    const { selectedSubservices } = useSelector((state) => state.bookingCardData);
+    const { subServices } = useSelector((state) => state.bookingCardData);
     const [selectedService, setSelectedService] = useState(null);
     const [active, setActive] = useState(null);
 
@@ -49,8 +49,8 @@ const SelectService = () => {
     }, [dispatch, servicesData]);
 
     useEffect(() => {
-        if (servicesData && servicesData.length > 0 && selectedSubservices && selectedSubservices.length > 0) {
-            const firstSubservice = selectedSubservices[0];
+        if (servicesData && servicesData.length > 0 && subServices && subServices.length > 0) {
+            const firstSubservice = subServices[0];
             const serviceId = firstSubservice.service || firstSubservice.service?._id;
             const foundService = servicesData.find(ser => ser._id === serviceId);
             if (foundService && !selectedService) {
@@ -58,18 +58,16 @@ const SelectService = () => {
                 setActive(serviceId);
             }
         } else if (servicesData && servicesData.length > 0 && !selectedService) {
-            // If no subservices selected, default to first service
             setSelectedService(servicesData[0]);
             setActive(servicesData[0]._id);
         }
-    }, [servicesData, selectedSubservices, selectedService]);
+    }, [servicesData, subServices, selectedService]);
 
     const handleFilter = (service) => {
         setSelectedService(service);
         setActive(service._id);
-        // Clear subservices when switching to a different service
-        if (selectedSubservices && selectedSubservices.length > 0) {
-            const firstSubservice = selectedSubservices[0];
+        if (subServices && subServices.length > 0) {
+            const firstSubservice = subServices[0];
             const currentServiceId = firstSubservice.service || firstSubservice.service?._id;
             if (currentServiceId !== service._id) {
                 dispatch(clearSelectedSubservices());
@@ -80,8 +78,7 @@ const SelectService = () => {
 
     const handleSelectSubservice = (sub) => {
         dispatch(toggleSubservice(sub));
-        // Only clear professional if switching to different service
-        const firstSubservice = selectedSubservices && selectedSubservices.length > 0 ? selectedSubservices[0] : null;
+        const firstSubservice = subServices && subServices.length > 0 ? subServices[0] : null;
         if (firstSubservice) {
             const currentServiceId = firstSubservice.service || firstSubservice.service?._id;
             const newServiceId = sub.service || sub.service?._id;
@@ -117,7 +114,7 @@ const SelectService = () => {
                 <div className="flex flex-col gap-4">
                     {
                         selectedService?.subServices?.map((sub, ind) => {
-                            const isSelected = selectedSubservices && selectedSubservices.some(selected => selected._id === sub._id);
+                            const isSelected = subServices && subServices.some(selected => selected._id === sub._id);
                             return (
                                 <div
                                     key={ind}

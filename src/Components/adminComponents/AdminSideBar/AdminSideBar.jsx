@@ -2,6 +2,7 @@ import { NavLink } from "react-router"
 import SignOutIcon from "../../icons/SignOutIcon"
 
 const AdminSideBar = () => {
+
     return (
         <aside className='p-8 pb-14 h-screen fixed top-0 left-0 z-50 '>
             <div className='h-full flex flex-col justify-between'>

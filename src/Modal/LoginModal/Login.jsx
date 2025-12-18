@@ -34,7 +34,7 @@ const Login = ({ setIsLoginOpen }) => {
             verificationCode: verificationCode
         }))
 
-        // window.location.reload()
+        window.location.reload()
     }
 
     const handleBackToLogin = () => {

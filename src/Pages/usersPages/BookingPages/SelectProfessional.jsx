@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { fetchGetEmployeesData } from "../../../store/slice/EmployeesDataState/EmployeeApi"
 import { setProfessional } from "../../../store/slice/BookingCardDataState/BookingCardDataSlice"
@@ -8,7 +8,7 @@ const SelectProfessional = () => {
 
     const dispatch = useDispatch()
 
-    const { selectedSubservices, professional } = useSelector(state => state.bookingCardData)
+    const { subServices, employee } = useSelector(state => state.bookingCardData)
     const { employeesData } = useSelector(state => state.employeesData)
 
     useEffect(() => {
@@ -20,10 +20,10 @@ const SelectProfessional = () => {
     console.log(employeesData);
 
     const matchedEmployee = employeesData.filter(emp => {
-        if (!selectedSubservices || selectedSubservices.length === 0) {
+        if (!subServices || subServices.length === 0) {
             return false;
         }
-        return selectedSubservices.every(selectedSub =>
+        return subServices.every(selectedSub =>
             emp.subServices.some(empSub => empSub._id === selectedSub._id)
         );
     });
@@ -62,7 +62,7 @@ const SelectProfessional = () => {
 
                     {
                         matchedEmployee.map((emp, ind) => {
-                            const isSelected = professional && professional._id === emp._id
+                            const isSelected = employee && employee._id === emp._id
                             return (
                                 <div
                                     key={ind}

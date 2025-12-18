@@ -1,24 +1,35 @@
 import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { useNavigate } from "react-router"
+
 import Login from "../../../Modal/LoginModal/Login"
-import { useSelector } from "react-redux"
+import { fetchInvalidateLogOut } from "../../../store/slice/AuthDataState/AuthDataApi"
 
 const Navigation = () => {
 
-    const [IsLoginOpen, setIsLoginOpen] = useState(false)
-    const [isLoged, setIsLoged] = useState(false)
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+
+    const { isAuthenticated, token } = useSelector(state => state.authData)
+
+    const [isLoginOpen, setIsLoginOpen] = useState(false)
+
 
     useEffect(() => {
-        if (IsLoginOpen) {
-            document.body.style.overflow = "hidden"
-        } else {
-            document.body.style.overflow = "auto"
-        }
+        document.body.style.overflow = isLoginOpen ? "hidden" : "auto"
 
         return () => {
             document.body.style.overflow = "auto"
         }
-    }, [IsLoginOpen])
+    }, [isLoginOpen])
 
+
+    const handleSignOut = () => {
+        dispatch(fetchInvalidateLogOut({ token }))
+        navigate("/", { replace: true })
+
+        window.location.reload()
+    }
 
     return (
         <>
@@ -26,45 +37,36 @@ const Navigation = () => {
                 <div className="container">
                     <div className="flex items-center justify-between">
                         <ul className="flex items-center gap-4">
-                            <li>
-                                <a href="#services" className="text-[24px] font-medium">Services</a>
-                            </li>
-                            <li>
-                                <a href="#team" className="text-[24px] font-medium ">Team</a>
-                            </li>
-                            <li>
-                                <a href="#about" className="text-[24px] font-medium ">About</a>
-                            </li>
+                            <li><a href="#services" className="text-[24px] font-medium">Services</a></li>
+                            <li><a href="#team" className="text-[24px] font-medium">Team</a></li>
+                            <li><a href="#about" className="text-[24px] font-medium">About</a></li>
                         </ul>
-                        <div>
-                            {
-                                isLoged ? (
-                                    <button
-                                        type="button"
-                                        className="text-[24px] text-blue-700 font-semibold p-3 rounded-[25px]"
-                                    >
-                                        Sign out
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={() => setIsLoginOpen(true)}
-                                        type="button"
-                                        className="text-[24px] text-blue-700 font-semibold p-3 rounded-[25px]"
-                                    >
-                                        Sign up
-                                    </button>
-                                )
-                            }
 
+                        <div>
+                            {isAuthenticated ? (
+                                <button
+                                    onClick={handleSignOut}
+                                    type="button"
+                                    className="text-[24px] text-red-600 font-semibold p-3 rounded-[25px]"
+                                >
+                                    Sign out
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => setIsLoginOpen(true)}
+                                    type="button"
+                                    className="text-[24px] text-blue-700 font-semibold p-3 rounded-[25px]"
+                                >
+                                    Sign up
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
-            </nav >
+            </nav>
 
-            {IsLoginOpen && <Login setIsLoginOpen={setIsLoginOpen} />
-            }
+            {isLoginOpen && <Login setIsLoginOpen={setIsLoginOpen} />}
         </>
-
     )
 }
 
