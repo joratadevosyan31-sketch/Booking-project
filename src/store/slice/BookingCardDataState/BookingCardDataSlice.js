@@ -3,7 +3,8 @@ import {
     loadBookingFromLocalStorage,
     updateBookingInLocalStorage,
     clearBookingFromLocalStorage,
-    fetchCreateBooking
+    fetchCreateBooking,
+    clearBookingDateTimeFromLocalStorage
 } from "./BookingCardApi";
 
 const BookingCardDataSlice = createSlice({
@@ -101,7 +102,12 @@ const BookingCardDataSlice = createSlice({
             state.startTime = null;
 
             clearBookingFromLocalStorage();
-        }
+        },
+        clearBookingDateTime: (state) => {
+            state.date = null;
+            state.startTime = null;
+            clearBookingDateTimeFromLocalStorage()
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -119,6 +125,6 @@ const BookingCardDataSlice = createSlice({
     }
 });
 
-export const { setSelectedSubservice, toggleSubservice, clearSelectedSubservices, setProfessional, setSelectedDate, setSelectedTime, clearBooking } = BookingCardDataSlice.actions;
+export const { setSelectedSubservice, toggleSubservice, clearSelectedSubservices, setProfessional, setSelectedDate, setSelectedTime, clearBooking, clearBookingDateTime } = BookingCardDataSlice.actions;
 
 export const bookingCardReducer = BookingCardDataSlice.reducer;

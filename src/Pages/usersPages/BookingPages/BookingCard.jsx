@@ -1,106 +1,3 @@
-// import { useEffect, useState } from 'react'
-// import { useSelector } from 'react-redux'
-// import SuccessBookingModal from '../../../Modal/SuccessBookingModal/SuccessBookingModal'
-// import BookingSalonInfo from './BookingSalonInfo'
-// import { useLocation, useNavigate } from 'react-router'
-// import Login from '../../../Modal/LoginModal/Login'
-
-// const BookingCard = () => {
-
-//     const navigate = useNavigate()
-//     const location = useLocation()
-
-//     const [isBookingSuccess, setIsBookingSuccess] = useState(false)
-//     const [isLoginOpen, setIsLoginOpen] = useState(false)
-
-//     const { subServices, employee, date, startTime } = useSelector((state) => state.bookingCardData);
-
-//     useEffect(() => {
-//         if (isLoginOpen || isBookingSuccess) {
-//             document.body.style.overflow = "hidden"
-//         } else {
-//             document.body.style.overflow = "auto"
-//         }
-//         return () => {
-//             document.body.style.overflow = "auto"
-//         }
-//     }, [isLoginOpen, isBookingSuccess])
-
-//     const totalPrice = subServices?.reduce((sum, sub) => sum + (sub.price || 0), 0) || 0;
-//     const totalDuration = subServices?.reduce((sum, sub) => sum + (sub.duration || 0), 0) || 0;
-
-//     const HandleChangePage = () => {
-//         if (subServices && subServices.length > 0) {
-//             navigate("select-employee")
-//         }
-//         if (employee && employee.length !== 0) {
-//             navigate("time-slot")
-//         }
-//     }
-
-
-//     return (
-//         <>
-//             <div className='border-[2px] border-gray rounded-[12px] p-[20px] sticky top-28 h-fit '>
-//                 <BookingSalonInfo />
-//                 <div className='py-6 overflow-y-auto max-h-[400px]'>
-//                     {subServices && subServices.length > 0 ? (
-//                         <div className='flex flex-col gap-3'>
-//                             {subServices.map((sub, index) => (
-//                                 <div key={sub._id || index} className='flex items-center justify-between border-b border-gray pb-3'>
-//                                     <div className='flex flex-col gap-1'>
-//                                         <p className='text-[20px] font-medium text-gray-950'>{sub?.name}</p>
-//                                         {
-//                                             employee && (
-//                                                 <p className='text-[20px] font-medium text-gray-600'>{`With ${employee?.name}`}</p>
-//                                             )
-//                                         }
-//                                         <p className='text-[16px] text-gray-600'>{sub?.duration} min</p>
-//                                     </div>
-//                                     <p className='text-[20px] font-medium text-gray-950'>{sub?.price} AMD</p>
-//                                 </div>
-//                             ))}
-//                         </div>
-//                     ) : (
-//                         <p className='text-gray-950'>no services selected</p>
-//                     )}
-//                 </div>
-//                 <div className='flex items-center justify-between border-t-2 border-t-gray py-6'>
-//                     <div className='flex flex-col gap-1'>
-//                         <p className='text-[20px] font-medium text-gray-600'>
-//                             {date && startTime ? `${date} at ${startTime}` : "No date/time selected"}
-//                         </p>
-//                         <span>Total</span>
-//                         {subServices && subServices.length > 0 && (
-//                             <span className='text-[14px] text-gray-600'>{totalDuration} min</span>
-//                         )}
-//                     </div>
-//                     <span>{totalPrice > 0 ? `${totalPrice} AMD` : 'free'}</span>
-//                 </div>
-//                 <div className='flex items-center justify-center'>
-//                     <button
-//                         onClick={HandleChangePage}
-//                         disabled={!subServices || subServices.length === 0 || (location.pathname === "/booking/select-employee" && !employee)}
-//                         type='button'
-//                         className='w-full text-white text-[24px] bg-black py-[20px] px- rounded-[25px] cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed'
-//                     >
-//                         Continue
-//                     </button>
-//                 </div>
-//             </div>
-
-//             {isLoginOpen && <Login setIsLoginOpen={setIsLoginOpen} />}
-//             {isBookingSuccess && <SuccessBookingModal setIsBookingSuccess={setIsBookingSuccess} />}
-//         </>
-
-//     )
-// }
-
-// export default BookingCard
-
-
-
-
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
@@ -117,11 +14,12 @@ const BookingCard = () => {
 
     const [isBookingSuccess, setIsBookingSuccess] = useState(false)
     const [isLoginOpen, setIsLoginOpen] = useState(false)
-
+    const [errorMessage, setErrorMessage] = useState("")
     const { isAuthenticated } = useSelector(state => state.authData)
 
     const { subServices, employee, date, startTime } = useSelector((state) => state.bookingCardData)
 
+    const isFinalStep = employee && date && startTime
 
     useEffect(() => {
         document.body.style.overflow =
@@ -141,42 +39,59 @@ const BookingCard = () => {
 
 
     const handleBookingAction = () => {
-        if (!subServices || subServices.length === 0) return
+
+        if (!subServices || subServices.length === 0) {
+            navigate("/booking")
+            setErrorMessage("Please select at least one service.")
+            return
+        }
 
         if (!employee) {
-            navigate("select-professional")
+            navigate("/booking/select-professional")
+            setErrorMessage("Please select a professional.")
             return
         }
 
         if (!date || !startTime) {
-            navigate("time-slot")
+            navigate("/booking/time-slot")
+            setErrorMessage("Please select a date and time.")
             return
         }
 
         if (!isAuthenticated) {
             setIsLoginOpen(true)
+            setErrorMessage("")
             return
         }
 
-        setIsBookingSuccess(true)
-
-        dispatch(fetchCreateBooking({
-            subServices,
-            employee,
+        console.log({
+            service: subServices[0].service,
+            subServices: subServices.map(sub => sub._id),
+            employee: employee._id,
             date,
-            startTime
+            startTime,
+        });
+
+
+        setErrorMessage("")
+        dispatch(fetchCreateBooking({
+            service: subServices[0].service,
+            subServices: subServices.map(sub => sub._id),
+            employee: employee._id,
+            date,
+            startTime,
         }))
+            .unwrap()
+            .then(() => setIsBookingSuccess(true))
+            .catch((e) => console.error("Booking failed:", e));
     }
 
-    const isFinalStep =
-        employee && date && startTime
+
 
     return (
         <>
             <div className="border-[2px] border-gray rounded-[12px] p-[20px] sticky top-28 h-fit">
                 <BookingSalonInfo />
-
-
                 <div className="py-6 overflow-y-auto max-h-[400px]">
                     {subServices?.length > 0 ? (
                         <div className="flex flex-col gap-3">
@@ -234,15 +149,21 @@ const BookingCard = () => {
                     </span>
                 </div>
 
-
-                <button
-                    onClick={handleBookingAction}
-                    disabled={!subServices || subServices.length === 0}
-                    className="w-full bg-black text-white text-[24px] py-5 rounded-[25px]
+                <div className='flex flex-col gap-3 '>
+                    {
+                        errorMessage && (
+                            <p className='text-bold text-[18px] text-red-500 text-center'>{errorMessage}</p>
+                        )
+                    }
+                    <button
+                        onClick={handleBookingAction}
+                        disabled={!subServices || subServices.length === 0}
+                        className="w-full bg-black text-white text-[24px] py-5 rounded-[25px]
                         disabled:bg-gray-400 disabled:cursor-not-allowed"
-                >
-                    {isFinalStep ? "Book now" : "Continue"}
-                </button>
+                    >
+                        {isFinalStep ? "Book now" : "Continue"}
+                    </button>
+                </div>
             </div>
 
 

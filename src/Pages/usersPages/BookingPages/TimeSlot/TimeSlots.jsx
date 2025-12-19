@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react"
 import CalendarBox from "./Components/CalendarBox"
 import ChangeProfessional from "./Components/ChangeProfessional"
 import { useDispatch, useSelector } from "react-redux"
-import { setSelectedDate, setSelectedTime } from "../../../../store/slice/BookingCardDataState/BookingCardDataSlice"
+import { clearBookingDateTime, setSelectedDate, setSelectedTime } from "../../../../store/slice/BookingCardDataState/BookingCardDataSlice"
 import TimeBox from "./Components/TimeBox"
 import { fetchGetAvailableSlots } from "../../../../store/slice/AvailableSlotsDataState/AvailableSlotsDataApi"
 
@@ -26,6 +26,13 @@ const TimeSlots = () => {
     const handleTimeSelect = (time) => {
         dispatch(setSelectedTime(time))
     }
+
+    useEffect(() => {
+
+        return () => {
+            dispatch(clearBookingDateTime())
+        }
+    }, [dispatch])
 
     return (
         <div>

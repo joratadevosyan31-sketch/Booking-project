@@ -6,7 +6,6 @@ import { setSelectedDate } from "../../../../../store/slice/BookingCardDataState
 const TimeBox = ({ slotsByDay, startTime, handleTimeSelect, employee, date }) => {
 
     const [availableByDays, setAvailableByDays] = useState(slotsByDay[date])
-    const dispatch = useDispatch()
 
     useEffect(() => {
         setAvailableByDays(slotsByDay[date])

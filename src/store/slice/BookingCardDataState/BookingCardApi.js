@@ -1,6 +1,5 @@
-import js from "@eslint/js";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import { instance } from "../../axiosConfig/AxiosConfig";
 
 export const loadBookingFromLocalStorage = () => {
     try {
@@ -55,27 +54,44 @@ export const updateBookingInLocalStorage = (newData) => {
     }
 };
 
-
-
-export const fetchCreateBooking = createAsyncThunk("bookingCardData/fetchCreateBooking", async ({ subServices, employee, date, startTime }) => {
-    const token = localStorage.getItem("token")
+export const clearBookingDateTimeFromLocalStorage = () => {
     try {
-        const responce = await axios.post("http://localhost:4000/bookings/reservation",
+        const bookingData = JSON.parse(localStorage.getItem("bookingCard")) || {};
+        delete bookingData.date;
+        delete bookingData.startTime;
+        localStorage.setItem("bookingCard", JSON.stringify(bookingData));
+    }
+    catch (err) {
+        console.error("Error clearing booking date and time from localStorage:", err);
+    }
+}
+
+
+export const fetchCreateBooking = createAsyncThunk("booking/create", async ({ service, subServices, employee, date, startTime }) => {
+    const token = localStorage.getItem("token")
+
+    try {
+        const responce = await instance.post("/bookings/reservation",
             {
+                service: service,
                 subServices,
                 employee,
                 date,
-                startTime
+                startTime,
             },
             {
                 headers: {
                     authorization: `Bearer ${token}`
-                },
-            })
+                }
+            }
+        );
 
-        return responce.data
+        console.log(responce.data);
 
+        return responce.data;
     } catch (error) {
-
+        console.log("fetchCreateBookingerror:", error);
+        throw error
     }
-})
+}
+);

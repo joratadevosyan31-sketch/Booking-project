@@ -28,7 +28,7 @@ const Navigation = () => {
         dispatch(fetchInvalidateLogOut({ token }))
         navigate("/", { replace: true })
 
-        window.location.reload()
+        // window.location.reload()
     }
 
     return (
