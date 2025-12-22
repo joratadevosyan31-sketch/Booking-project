@@ -29,12 +29,17 @@ const Login = ({ setIsLoginOpen }) => {
 
         const idToken = await user.getIdToken();
 
-        dispatch(fetchVerifyUser({
-            idToken: idToken,
-            verificationCode: verificationCode
-        }))
+        try {
+            await dispatch(fetchVerifyUser({
+                idToken: idToken,
+                verificationCode: verificationCode
+            })).unwrap();
 
-        window.location.reload()
+            window.location.reload()
+        } catch (error) {
+            console.error("Login verification failed:", error);
+            setIsLoginOpen(true)
+        }
     }
 
     const handleBackToLogin = () => {

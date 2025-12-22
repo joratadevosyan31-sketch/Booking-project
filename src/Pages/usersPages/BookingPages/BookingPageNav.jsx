@@ -13,7 +13,7 @@ const BookingPageNav = () => {
         dispatch(clearBooking())
         navigate("/", { replace: true })
 
-        windows.location.reload()
+        window.location.reload()
     }
 
     return (

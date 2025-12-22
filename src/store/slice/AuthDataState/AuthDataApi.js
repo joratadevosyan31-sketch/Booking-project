@@ -1,6 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { instance } from "../../axiosConfig/AxiosConfig";
-import axios from "axios";
 
 export const fetchVerifyUser = createAsyncThunk("authData/fetchVerifyUser", async ({ idToken, verificationCode }) => {
 
@@ -30,7 +29,7 @@ export const fetchInvalidateLogOut = createAsyncThunk("authData/fetchInvalidateL
     try {
         const token = localStorage.getItem("token");
 
-        if (!token) throw error("No token found");
+        if (!token) throw new Error("No token found");
 
         await instance.patch(`/auth/invalidate-and-logout`,
             {},
@@ -46,7 +45,7 @@ export const fetchInvalidateLogOut = createAsyncThunk("authData/fetchInvalidateL
         return true;
     } catch (error) {
         console.error("fetchLogout error:", error);
-        return rejectWithValue(error);
+        throw error;
     }
 
 })

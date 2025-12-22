@@ -81,7 +81,7 @@ export const fetchCreateBooking = createAsyncThunk("booking/create", async ({ se
             },
             {
                 headers: {
-                    authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`
                 }
             }
         );
