@@ -6,6 +6,7 @@ import SuccessBookingModal from '../../../Modal/SuccessBookingModal/SuccessBooki
 import BookingSalonInfo from './BookingSalonInfo'
 import Login from '../../../Modal/LoginModal/Login'
 import { fetchCreateBooking } from '../../../store/slice/BookingCardDataState/BookingCardApi'
+import { clearBooking } from '../../../store/slice/BookingCardDataState/BookingCardDataSlice'
 
 const BookingCard = () => {
 
@@ -82,7 +83,11 @@ const BookingCard = () => {
             startTime,
         }))
             .unwrap()
-            .then(() => setIsBookingSuccess(true))
+            .then(() => {
+                setIsBookingSuccess(true);
+                dispatch(clearBooking())
+            }
+            )
             .catch((e) => console.error("Booking failed:", e));
     }
 

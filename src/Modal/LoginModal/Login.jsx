@@ -1,88 +1,97 @@
-import LoginForm from './Components/LoginForm'
-import CloseIcon from '../../Components/icons/CloseIcon'
-import ConfirmLogin from './Components/ConfirmLogin'
-import { useState } from 'react'
-import { fetchVerifyUser } from '../../store/slice/AuthDataState/AuthDataApi'
-import { useDispatch } from 'react-redux'
-import { instance } from '../../store/axiosConfig/AxiosConfig'
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
+import LoginForm from "./Components/LoginForm";
+import ConfirmLogin from "./Components/ConfirmLogin";
+import CloseIcon from "../../Components/icons/CloseIcon";
+
+import { fetchVerifyUser } from "../../store/slice/AuthDataState/AuthDataApi";
 
 const Login = ({ setIsLoginOpen }) => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    const dispatch = useDispatch()
-
-    const [formMode, setFormMode] = useState("login")
-    const [confirmationResult, setConfirmationResult] = useState(null)
-    const [phoneNumber, setPhoneNumber] = useState("")
+    const [formMode, setFormMode] = useState("login");
+    const [confirmationResult, setConfirmationResult] = useState(null);
+    const [phoneNumber, setPhoneNumber] = useState("");
 
     const handleCloseLogin = (e) => {
         if (e.target === e.currentTarget) {
-            setIsLoginOpen(false)
+            setIsLoginOpen(false);
         }
-    }
+    };
+
 
     const handleAuthSuccess = async ({ user, verificationCode }) => {
-        // console.log("User authenticated successfully:", user)
-        setIsLoginOpen(false)
-
-        // localStorage.setItem("user", JSON.stringify(user))
-        // localStorage.setItem("isAuthenticated", "true")
-
-        const idToken = await user.getIdToken();
-
         try {
-            await dispatch(fetchVerifyUser({
-                idToken: idToken,
-                verificationCode: verificationCode
-            })).unwrap();
+            const idToken = await user.getIdToken();
 
-            window.location.reload()
+            const response = await dispatch(
+                fetchVerifyUser({
+                    idToken,
+                    verificationCode,
+                })
+            ).unwrap();
+
+            const role = String(response?.user?.role || "").toLowerCase();
+
+            setIsLoginOpen(false);
+
+            if (role === "admin") {
+                navigate("/admin-dashboard", { replace: true });
+            } else {
+                navigate("/", { replace: true });
+            }
+
         } catch (error) {
             console.error("Login verification failed:", error);
-            setIsLoginOpen(true)
+            setIsLoginOpen(true);
         }
-    }
+    };
 
     const handleBackToLogin = () => {
-        setFormMode("login")
-        setConfirmationResult(null)
-    }
+        setFormMode("login");
+        setConfirmationResult(null);
+    };
 
     return (
         <div
             onClick={handleCloseLogin}
-            className="flex items-center justify-center fixed inset-0 bottom-0 bg-[#00000033] z-[9999]"
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#00000033]"
         >
             <div className="relative modal-anim">
-                <div className="w-[600px] flex flex-col items-center gap-6 border-[2px] border-gray p-6 rounded-[12px] bg-white">
-                    <h2 className="text-[36px]">Paragon for users</h2>
+                <div className="w-[600px] rounded-[12px] border-[2px] border-gray bg-white p-6 flex flex-col items-center gap-6">
+                    <h2 className="text-[36px] font-semibold">Paragon for users</h2>
 
-                    {formMode === "login" &&
+                    {formMode === "login" && (
                         <LoginForm
                             setFormMode={setFormMode}
                             setConfirmationResult={setConfirmationResult}
                             setPhoneNumber={setPhoneNumber}
                         />
-                    }
+                    )}
 
-                    {formMode === "confirm" &&
+                    {formMode === "confirm" && (
                         <ConfirmLogin
                             confirmationResult={confirmationResult}
                             phoneNumber={phoneNumber}
                             onSuccess={handleAuthSuccess}
                             onBack={handleBackToLogin}
                         />
-                    }
+                    )}
                 </div>
+
                 <button
-                    onClick={() => setIsLoginOpen(false)}
                     type="button"
-                    className="absolute top-3 right-3 p-2 border-[1px] border-gray rounded-full hover:bg-gray-100 transition-colors"
+                    onClick={() => setIsLoginOpen(false)}
+                    className="absolute top-3 right-3 p-2 rounded-full border border-gray hover:bg-gray-100 transition"
                 >
                     <CloseIcon />
                 </button>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Login
+export default Login;

@@ -6,6 +6,7 @@ import BookingTable from '../Pages/adminPages/BookingTable'
 import SalonPage from '../Pages/adminPages/SalonPage'
 
 const AdminPageRoutes = () => {
+
     return (
         <Routes>
             <Route element={<AdminPageLayout />}>

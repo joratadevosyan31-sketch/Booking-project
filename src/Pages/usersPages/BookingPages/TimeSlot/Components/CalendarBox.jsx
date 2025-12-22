@@ -1,28 +1,21 @@
-
 import dayjs from 'dayjs';
-import 'dayjs/locale/zh-cn';
-import { Calendar, Flex, Radio, Select, theme, Typography } from 'antd';
 import dayLocaleData from 'dayjs/plugin/localeData';
-import { useDispatch } from 'react-redux';
+import { Calendar, Flex, Select, theme } from 'antd';
 import { useEffect } from 'react';
-import { setSelectedDate } from '../../../../../store/slice/BookingCardDataState/BookingCardDataSlice';
+
 dayjs.extend(dayLocaleData);
 
-
-const CalendarBox = ({ availableDays, onDateSelect, selectedDate }) => {
-
-    const dispatch = useDispatch()
-
+const CalendarBox = ({ availableDays, selectedDate, setSelectedDate }) => {
     const { token } = theme.useToken();
 
-    const onPanelChange = (value, mode) => {
-        console.log(value.format('YYYY-MM-DD'), mode);
-    };
+    useEffect(() => {
+        if (availableDays?.length && !selectedDate) {
+            setSelectedDate(availableDays[0]);
+        }
+    }, [availableDays, selectedDate, setSelectedDate]);
 
     const onDateChange = (value) => {
-        if (onDateSelect) {
-            onDateSelect(value.format('YYYY-MM-DD'));
-        }
+        setSelectedDate(value.format('YYYY-MM-DD'));
     };
 
     const wrapperStyle = {
@@ -31,78 +24,53 @@ const CalendarBox = ({ availableDays, onDateSelect, selectedDate }) => {
         borderRadius: token.borderRadiusLG,
     };
 
-
-    useEffect(() => {
-        setSelectedDate(availableDays[0])
-    }, [dispatch])
-
     return (
-        <div>
+        <div style={wrapperStyle}>
             <Calendar
                 fullscreen={false}
                 value={selectedDate ? dayjs(selectedDate) : undefined}
                 onChange={onDateChange}
+                disabledDate={(date) => {
+                    if (!availableDays || availableDays.length === 0) return true;
+                    return !availableDays.includes(date.format('YYYY-MM-DD'));
+                }}
                 headerRender={({ value, type, onChange, onTypeChange }) => {
-                    const year = value?.year();
-                    const month = value?.month();
-                    const yearOptions = Array.from({ length: 20 }, (_, i) => {
-                        const label = year - 10 + i;
-                        return { label, value: label };
-                    });
+                    const year = value.year();
+                    const month = value.month();
+
+                    const yearOptions = Array.from({ length: 20 }, (_, i) => ({
+                        label: year - 10 + i,
+                        value: year - 10 + i,
+                    }));
                     const monthOptions = value
-                        ?.localeData()
-                        ?.monthsShort()
-                        ?.map((label, index) => ({
-                            label,
-                            value: index,
-                        }));
+                        .localeData()
+                        .monthsShort()
+                        .map((label, index) => ({ label, value: index }));
+
                     return (
                         <div style={{ padding: 8 }}>
-                            {/* <Typography.Title level={4}>Select Date{`${year}`}</Typography.Title> */}
                             <Flex gap={3}>
-                                <Radio.Group size="small" onChange={e => onTypeChange(e.target.value)} value={type}>
-                                    {/* <Radio.Button value="month">Month</Radio.Button> */}
-                                    {/* <Radio.Button value="year">Year</Radio.Button> */}
-                                </Radio.Group>
                                 <Select
                                     size="small"
                                     popupMatchSelectWidth={false}
                                     value={year}
                                     options={yearOptions}
-                                    onChange={newYear => {
-                                        const now = value.clone().year(newYear);
-                                        onChange(now);
-                                    }}
+                                    onChange={(newYear) => onChange(value.clone().year(newYear))}
                                 />
                                 <Select
                                     size="small"
                                     popupMatchSelectWidth={false}
                                     value={month}
                                     options={monthOptions}
-                                    onChange={newMonth => {
-                                        const now = value.clone().month(newMonth);
-                                        onChange(now);
-                                    }}
+                                    onChange={(newMonth) => onChange(value.clone().month(newMonth))}
                                 />
                             </Flex>
                         </div>
                     );
                 }}
-                onPanelChange={onPanelChange}
-                disabledDate={(date) => {
-                    if (!availableDays || availableDays.length === 0) {
-                        return true;
-                    }
-                    const formattedDate = date.format('YYYY-MM-DD');
-
-                    return !availableDays.includes(formattedDate);
-                }}
-
             />
         </div>
     );
 };
+
 export default CalendarBox;
-
-
-

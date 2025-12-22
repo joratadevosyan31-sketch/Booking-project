@@ -1,7 +1,34 @@
-import { NavLink } from "react-router"
+import { NavLink, useNavigate } from "react-router"
 import SignOutIcon from "../../icons/SignOutIcon"
+import { useDispatch, useSelector } from "react-redux"
+import { useEffect, useState } from "react"
+import { fetchInvalidateLogOut } from "../../../store/slice/AuthDataState/AuthDataApi"
 
 const AdminSideBar = () => {
+
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+
+    const { isAuthenticated, token } = useSelector(state => state.authData)
+
+    const [isLoginOpen, setIsLoginOpen] = useState(false)
+
+
+    useEffect(() => {
+        document.body.style.overflow = isLoginOpen ? "hidden" : "auto"
+
+        return () => {
+            document.body.style.overflow = "auto"
+        }
+    }, [isLoginOpen])
+
+
+    const handleSignOut = () => {
+        dispatch(fetchInvalidateLogOut({ token }))
+        navigate("/", { replace: true })
+
+        window.location.reload()
+    }
 
     return (
         <aside className='p-8 pb-14 h-screen fixed top-0 left-0 z-50 '>
@@ -29,6 +56,7 @@ const AdminSideBar = () => {
 
                 <div className=''>
                     <button
+                        onClick={handleSignOut}
                         type='button'
                         className="flex items-center gap-2 text-white px-1 py-3 rounded-full"
                     >
