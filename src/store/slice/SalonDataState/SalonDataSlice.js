@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchGetSalonData } from "./SalonApi";
+import { fetchGetSalonData, fetchPatchSalonData } from "./SalonApi";
 
 const SalonDataSlice = createSlice({
     name: "salonData",
@@ -21,6 +21,19 @@ const SalonDataSlice = createSlice({
                 state.salonData = payload.salon
             })
             .addCase(fetchGetSalonData.rejected, (state, { payload }) => {
+                state.isLoading = false
+                state.isError = payload
+            })
+
+
+            .addCase(fetchPatchSalonData.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(fetchPatchSalonData.fulfilled, (state, { payload }) => {
+                state.isLoading = false
+                state.salonData = payload.salon
+            })
+            .addCase(fetchPatchSalonData.rejected, (state, { payload }) => {
                 state.isLoading = false
                 state.isError = payload
             })

@@ -8,16 +8,12 @@ const AdminProtected = () => {
     if (isLoading) return null;
 
     const isAdmin = !!user && String(user.role || "").toLowerCase() === "admin";
-    console.log(isAuthenticated);
-    console.log(user?.role);
 
     if (!isAuthenticated || !isAdmin) {
         console.log("userrrr");
         return <Navigate to="/" replace />;
 
     }
-
-    console.log("yfujfgkjehd");
 
     return <Outlet />;
 };

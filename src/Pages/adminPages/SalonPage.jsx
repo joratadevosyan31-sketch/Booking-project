@@ -1,59 +1,36 @@
-import React, { use } from 'react'
-import { useSelector } from 'react-redux'
+import React, { use, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchGetEmployeesData } from '../../store/slice/EmployeesDataState/EmployeeApi'
+import { fetchGetSalonData } from '../../store/slice/SalonDataState/SalonApi'
 
 const SalonPage = () => {
 
-    const { employeesData } = useSelector(state => state.employeesData)
+    const dispatch = useDispatch()
+    const { salonData } = useSelector(state => state.salonData)
+
+    useEffect(() => {
+        if (!salonData || salonData.length === 0) {
+            dispatch(fetchGetSalonData())
+        }
+    }, [dispatch])
+
+    console.log(salonData);
 
     return (
         <div className="w-full border border-gray-300 rounded overflow-hidden">
 
-            <div className="flex bg-gray-100 text-gray-700 font-semibold">
-                {
-                    employeesData.map((emp, ind) => {
-                        Object.keys(booking).forEach(key => (
-                            <div className="w-[200px] px-4 py-2 border-r border-gray-300">{key}</div>
-                        )
-                        )
-                    })
-                }
-                <div className="w-[150px] px-4 py-2 border-r border-gray-300">Role</div>
-                <div className="w-[150px] px-4 py-2">Actions</div>
+            <div className="grid grid-cols-8 items-center bg-gray-100 text-gray-700 font-semibold">
+                <div className="text-center px-4 py-2 border-r border-gray-300">Name</div>
+                <div className="text-center px-4 py-2 border-r border-gray-300">Address</div>
+                <div className="text-center px-4 py-2 border-r border-gray-300">Work Start</div>
+                <div className="text-center px-4 py-2 border-r border-gray-300">Work End</div>
+                <div className="text-center px-4 py-2 border-r border-gray-300">Break Start</div>
+                <div className="text-center px-4 py-2 border-r border-gray-300">Break End</div>
+                <div className="text-center px-4 py-2  border-gray-300">Break Between Services</div>
+                <div className="text-center px-4 py-2 border-l border-gray-300">Action</div>
             </div>
 
-            {/* Add new row */}
-            <div className="flex bg-gray-50 items-center border-t border-gray-300">
-                <div className="w-[200px] px-4 py-2 border-r border-gray-300">
-                    <input type="text" placeholder="New Name" className="w-full border rounded px-2 py-1" />
-                </div>
-                <div className="w-[150px] px-4 py-2 border-r border-gray-300">
-                    <input type="text" placeholder="Role" className="w-full border rounded px-2 py-1" />
-                </div>
-                <div className="w-[150px] px-4 py-2">
-                    <button className="bg-[rgb(71,85,105)] text-white px-4 py-1 rounded">Add</button>
-                </div>
-            </div>
-
-            {/* Data rows */}
-            <div className="flex items-center border-t border-gray-200 bg-white hover:bg-gray-50">
-                <div className="w-[200px] px-4 py-2 border-r border-gray-300">John Doe</div>
-                <div className="w-[150px] px-4 py-2 border-r border-gray-300">Manager</div>
-                <div className="w-[150px] px-4 py-2 flex gap-2">
-                    <button className="bg-[rgb(71,85,105)] text-white px-3 py-1 rounded">Edit</button>
-                    <button className="bg-red-600 text-white px-3 py-1 rounded">Delete</button>
-                </div>
-            </div>
-
-            <div className="flex items-center border-t border-gray-200 bg-white hover:bg-gray-50">
-                <div className="w-[200px] px-4 py-2 border-r border-gray-300">Jane Smith</div>
-                <div className="w-[150px] px-4 py-2 border-r border-gray-300">Stylist</div>
-                <div className="w-[150px] px-4 py-2 flex gap-2">
-                    <button className="bg-[rgb(71,85,105)] text-white px-3 py-1 rounded">Edit</button>
-                    <button className="bg-red-600 text-white px-3 py-1 rounded">Delete</button>
-                </div>
-            </div>
-
-            {/* Repeat data rows as needed */}
+            <div className='grid grid-cols-8 items-center bg-gray-100 text-gray-700 font-medium'></div>
         </div>
 
     )

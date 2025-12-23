@@ -20,7 +20,7 @@ const bookingsDataSlice = createSlice({
             })
             .addCase(fetchGetBookings.fulfilled, (state, { payload }) => {
                 state.isLoading = false
-                state.customerData = payload.bookings
+                state.bookingsData = payload.bookings
             })
             .addCase(fetchGetBookings.rejected, (state, { payload }) => {
                 state.isLoading = false

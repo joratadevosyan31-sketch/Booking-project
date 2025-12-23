@@ -12,3 +12,16 @@ export const fetchGetSalonData = createAsyncThunk("salonData/fetchGetSalonData",
         throw error;
     }
 })
+
+
+export const fetchPatchSalonData = createAsyncThunk("salonData/fetchPatchSalonData", async () => {
+    try {
+        const responce = await instance.patch("/salon");
+        const result = responce.data
+
+        return result
+    } catch (error) {
+        console.error("fetchPatchSalonData error:", error);
+        throw error
+    }
+})
