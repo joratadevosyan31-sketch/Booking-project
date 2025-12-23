@@ -18,7 +18,7 @@ const SalonDataSlice = createSlice({
             })
             .addCase(fetchGetSalonData.fulfilled, (state, { payload }) => {
                 state.isLoading = false
-                state.salonData = payload.salon
+                state.salonData = payload.salon || payload
             })
             .addCase(fetchGetSalonData.rejected, (state, { payload }) => {
                 state.isLoading = false
@@ -31,7 +31,7 @@ const SalonDataSlice = createSlice({
             })
             .addCase(fetchPatchSalonData.fulfilled, (state, { payload }) => {
                 state.isLoading = false
-                state.salonData = payload.salon
+                state.salonData = payload.salon || payload
             })
             .addCase(fetchPatchSalonData.rejected, (state, { payload }) => {
                 state.isLoading = false

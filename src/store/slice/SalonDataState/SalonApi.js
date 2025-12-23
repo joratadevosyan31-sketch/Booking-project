@@ -5,7 +5,7 @@ export const fetchGetSalonData = createAsyncThunk("salonData/fetchGetSalonData",
     try {
         const response = await instance.get("/salon");
         const result = response.data
-        // console.log(result);
+        console.log(result);
         return result
     } catch (error) {
         console.error("fetchGetSalonData error:", error);
@@ -14,14 +14,16 @@ export const fetchGetSalonData = createAsyncThunk("salonData/fetchGetSalonData",
 })
 
 
-export const fetchPatchSalonData = createAsyncThunk("salonData/fetchPatchSalonData", async () => {
-    try {
-        const responce = await instance.patch("/salon");
-        const result = responce.data
-
-        return result
-    } catch (error) {
-        console.error("fetchPatchSalonData error:", error);
-        throw error
+export const fetchPatchSalonData = createAsyncThunk('salonData/fetchPatchSalonData',
+    async (updateData, { rejectWithValue }) => {
+        const token = localStorage.getItem("token")
+        try {
+            const response = await instance.patch('/salon', updateData,  {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+            return response.data
+        } catch (err) {
+            return rejectWithValue(err.response?.data)
+        }
     }
-})
+)
