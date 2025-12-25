@@ -28,16 +28,16 @@ const AdminTopBar = () => {
         <div className="py-4 sticky top-0 bg-white z-10">
             <div className="flex items-center justify-around w-full">
 
-                <div className="flex flex-col items-center justify-center">
+                <div className="flex flex-col items-center justify-center text-slate-600">
                     <p className="text-[56px] font-bold">
                         {employeesData.length}
                     </p>
                     <span className="text-[20px]">Employees</span>
                 </div>
 
-                <div className="w-[2px] h-40 bg-[#dadada]"></div>
+                <div className="w-[2px] h-40 bg-slate-600"></div>
 
-                <div className="flex flex-col items-center justify-center">
+                <div className="flex flex-col items-center justify-center text-slate-600">
                     <p className="text-[56px] font-bold">
                         {pendingBookingsCount}
                     </p>

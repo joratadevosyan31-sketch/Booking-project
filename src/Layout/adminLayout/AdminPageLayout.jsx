@@ -11,7 +11,7 @@ const AdminPageLayout = () => {
                 </div>
 
                 <div className="flex flex-col flex-1">
-                    <div className="border-b-2 border-[#dadada]">
+                    <div className="border-b-2 border-slate-600">
                         <AdminTopBar />
                     </div>
                     <div className="flex-1 overflow-auto p-6">

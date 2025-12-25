@@ -11,7 +11,10 @@ export const fetchGetBookings = createAsyncThunk("bookingsData/fetchGetBookings"
             },
         });
 
-        return response.data;
+        const result = response.data
+        console.log(result);
+
+        return result
     } catch (error) {
         console.error("fetchGetBookings error:", error);
         throw error;
@@ -20,19 +23,44 @@ export const fetchGetBookings = createAsyncThunk("bookingsData/fetchGetBookings"
 );
 
 
-export const fetchDeleteBooking = ("bookingsData/fetchDeleteBooking", async ({ bookingId }) => {
+export const fetchPatchBooking = ("bookingsData/fetchPatchBooking", async () => {
+    const token = localStorage.getItem("token")
     try {
-        const responce = await instance.delete("/bookings", {
-            bookingId
-        })
-        const result = responce.data
+        const response = await instance.patch("/bookings",
+            {
+                bookingId
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        )
+        const result = response.data
 
         return result
     } catch (error) {
-        console.log("fetchDeleteBooking error:", error);
+        console.log("fetchPatchBooking error:", error);
         throw error
     }
 })
 
+export const fetchDeleteBooking = createAsyncThunk('salonData/fetchDeleteBooking', async (bookingId, { rejectWithValue }) => {
+    const token = localStorage.getItem("token")
+    console.log(bookingId);
 
+    try {
+        const response = await instance.delete(`/bookings/${bookingId}`,
+            {
+                headers: { Authorization: `Bearer ${token}` },
+            }
+        )
+        const result = response.data
 
+        return result
+    } catch (err) {
+        console.error("fetchDeleteBooking error:", err)
+        return rejectWithValue(err.response?.data)
+    }
+}
+)

@@ -29,7 +29,6 @@ const SalonPage = () => {
 
         setFormData(updated)
 
-        // detect changes
         const changed = Object.keys(updated).some(
             k => updated[k] !== salonData[k]
         )
@@ -66,7 +65,7 @@ const SalonPage = () => {
     return (
         <div className="w-full border border-gray-300 rounded overflow-hidden">
 
-            {/* Header */}
+
             <div className="grid grid-cols-8 bg-gray-100 text-gray-700 font-semibold">
                 <div className="text-center p-2 border-r">Name</div>
                 <div className="text-center p-2 border-r">Address</div>
@@ -78,7 +77,7 @@ const SalonPage = () => {
                 <div className="text-center p-2">Action</div>
             </div>
 
-            {/* Row */}
+
             <div className="grid grid-cols-8 items-center text-gray-600">
                 <div className="text-center p-2 border-r">{renderCell('name')}</div>
                 <div className="text-center p-2 border-r">{renderCell('address')}</div>
