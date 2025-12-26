@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 
-import SuccessBookingModal from '../../../Modal/SuccessBookingModal/SuccessBookingModal'
+import SuccessBookingModal from '../../../Modal/userModal/SuccessBookingModal/SuccessBookingModal'
 import BookingSalonInfo from './BookingSalonInfo'
-import Login from '../../../Modal/LoginModal/Login'
+import Login from '../../../Modal/userModal/LoginModal/Login'
 import { fetchCreateBooking } from '../../../store/slice/BookingCardDataState/BookingCardApi'
 import { clearBooking } from '../../../store/slice/BookingCardDataState/BookingCardDataSlice'
 

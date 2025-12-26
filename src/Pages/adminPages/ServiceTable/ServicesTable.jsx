@@ -10,7 +10,9 @@ import {
   fetchCreateSubService,
   fetchUpdateSubService,
   fetchDeleteSubService,
-} from "../../store/slice/ServicesDataState/ServicesApi";
+} from "../../../store/slice/ServicesDataState/ServicesApi";
+import NoServiceFound from "./Components/NoServiceFound";
+import IsLoading from "../../../Components/IsLoading";
 
 const ServicesTable = () => {
   const dispatch = useDispatch();
@@ -156,9 +158,7 @@ const ServicesTable = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-[24px] text-gray-600">Loading...</p>
-      </div>
+      <IsLoading />
     );
   }
 
@@ -184,9 +184,8 @@ const ServicesTable = () => {
           servicesData.map((service, index) => (
             <div
               key={service._id || index}
-              className={`border-b border-gray-200 ${
-                index === 0 ? "border-t-0" : ""
-              } hover:bg-gray-50 transition-colors`}
+              className={`border-b border-gray-200 ${index === 0 ? "border-t-0" : ""
+                } hover:bg-gray-50 transition-colors`}
             >
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -291,15 +290,10 @@ const ServicesTable = () => {
             </div>
           ))
         ) : (
-          <div className="p-12 text-center">
-            <p className="text-[20px] text-gray-500">
-              No services found. Create your first service!
-            </p>
-          </div>
+          <NoServiceFound />
         )}
       </div>
 
-      {/* Service Modal */}
       <Modal
         title={editingService ? "Edit Service" : "Create New Service"}
         open={isServiceModalOpen}
@@ -331,7 +325,7 @@ const ServicesTable = () => {
         </div>
       </Modal>
 
-      {/* Sub-Service Modal */}
+
       <Modal
         title={
           editingSubService ? "Edit Sub-Service" : "Create New Sub-Service"

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { verifySMSCode } from "../../../firebase";
+import { verifySMSCode } from "../../../../firebase";
 
 const ConfirmLogin = ({
   confirmationResult,

@@ -1,9 +1,9 @@
 import { Route, Routes } from 'react-router-dom'
 import AdminPageLayout from '../Layout/adminLayout/AdminPageLayout'
-import EmployeeTable from '../Pages/adminPages/EmployeeTable'
-import ServicesTable from '../Pages/adminPages/ServicesTable'
-import BookingTable from '../Pages/adminPages/BookingTable'
+import EmployeeTable from '../Pages/adminPages/EmployeeTable/EmployeeTable'
+import ServicesTable from '../Pages/adminPages/ServiceTable/ServicesTable'
 import SalonPage from '../Pages/adminPages/SalonPage'
+import BookingTable from '../Pages/adminPages/BookingTable/BookingTable'
 
 const AdminPageRoutes = () => {
 

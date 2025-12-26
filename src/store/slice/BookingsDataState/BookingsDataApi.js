@@ -23,12 +23,13 @@ export const fetchGetBookings = createAsyncThunk("bookingsData/fetchGetBookings"
 );
 
 
-export const fetchPatchBooking = ("bookingsData/fetchPatchBooking", async () => {
+export const fetchPatchBooking = createAsyncThunk("bookingsData/fetchPatchBooking", async ({ bookingId, data }) => {
     const token = localStorage.getItem("token")
     try {
         const response = await instance.patch("/bookings",
             {
-                bookingId
+                bookingId,
+                ...data
             },
             {
                 headers: {

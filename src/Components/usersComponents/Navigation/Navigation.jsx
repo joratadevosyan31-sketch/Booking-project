@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 
-import Login from "../../../Modal/LoginModal/Login"
+import Login from "../../../Modal/userModal/LoginModal/Login"
 import { fetchInvalidateLogOut } from "../../../store/slice/AuthDataState/AuthDataApi"
 
 const Navigation = () => {

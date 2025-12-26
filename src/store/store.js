@@ -8,6 +8,7 @@ import { dayScheduleDataReducer } from "./slice/DaySchedualeDataState/DaySchedul
 import { bookingsDataReducer } from "./slice/BookingsDataState/BookingsDataSlice";
 import { bookingCardReducer } from "./slice/BookingCardDataState/BookingCardDataSlice";
 import { availableSlotsDataReducer } from "./slice/AvailableSlotsDataState/AvailableSlotsDataSlice";
+import { statisticDataReducer } from "./slice/StatisticDataState/StatisticDataSlice";
 
 export const store = configureStore({
     reducer: {
@@ -20,5 +21,6 @@ export const store = configureStore({
         bookingCardData: bookingCardReducer,
         bookingsData: bookingsDataReducer,
         availableSlotsData: availableSlotsDataReducer,
+        statisticData: statisticDataReducer,
     }
 })

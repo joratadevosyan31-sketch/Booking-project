@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 
 import LoginForm from "./Components/LoginForm";
 import ConfirmLogin from "./Components/ConfirmLogin";
-import CloseIcon from "../../Components/icons/CloseIcon";
+import CloseIcon from "../../../Components/icons/CloseIcon";
 
-import { fetchVerifyUser } from "../../store/slice/AuthDataState/AuthDataApi";
+import { fetchVerifyUser } from "../../../store/slice/AuthDataState/AuthDataApi";
 
 const Login = ({ setIsLoginOpen }) => {
     const dispatch = useDispatch();

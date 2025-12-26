@@ -5,7 +5,7 @@ import {
     signInWithPhoneNumber,
     setupRecaptcha,
     clearRecaptcha
-} from "../../../firebase";
+} from "../../../../firebase";
 
 const LoginForm = ({ setFormMode, setConfirmationResult, setPhoneNumber: setParentPhoneNumber }) => {
     const [error, setError] = useState("");

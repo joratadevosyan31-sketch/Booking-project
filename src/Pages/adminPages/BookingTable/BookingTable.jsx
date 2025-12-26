@@ -1,56 +1,39 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Select, Button, Avatar, Tag, Modal } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
-import { fetchGetEmployeesData } from "../../store/slice/EmployeesDataState/EmployeeApi";
+
+import { fetchGetEmployeesData } from "../../../store/slice/EmployeesDataState/EmployeeApi";
 import {
   fetchDeleteBooking,
   fetchGetBookings,
   fetchPatchBooking,
-} from "../../store/slice/BookingsDataState/BookingsDataApi";
+} from "../../../store/slice/BookingsDataState/BookingsDataApi";
+
+import NoBookingFound from "./Components/NoBookingFound";
+import BookingTableHeader from "./Components/BookingTableHeader";
+import IsLoading from "../../../Components/IsLoading";
 
 const BookingTable = () => {
   const dispatch = useDispatch();
 
-  const { bookingsData, isLoading } = useSelector(
-    (state) => state.bookingsData
-  );
+  const { bookingsData, isLoading } = useSelector((state) => state.bookingsData);
   const { employeesData } = useSelector((state) => state.employeesData);
 
   useEffect(() => {
-    dispatch(fetchGetBookings());
-    dispatch(fetchGetEmployeesData());
+    if (!bookingsData || bookingsData.length === 0) {
+      dispatch(fetchGetBookings());
+    }
+    if (!employeesData || employeesData.length === 0) {
+      dispatch(fetchGetEmployeesData());
+    }
   }, [dispatch]);
 
-  const handleStatusChange = (bookingId, status) => {
-    dispatch(
-      fetchPatchBooking({
-        id: bookingId,
-        data: { status },
-      })
-    );
-  };
-
-  const handleEmployeeChange = (bookingId, employeeId) => {
-    const selectedEmployee = employeesData.find(
-      (emp) => emp.name === employeeId
-    );
-    if (selectedEmployee) {
-      dispatch(
-        fetchPatchBooking({
-          id: bookingId,
-          data: { employee: selectedEmployee._id },
-        })
-      );
-    }
-  };
-
-  const handleSubServicesChange = (bookingId, subServiceNames) => {
-    dispatch(
-      fetchPatchBooking({
-        id: bookingId,
-        data: { subServices: subServiceNames },
-      })
+  const handleChange = (bookingId, data) => {
+    dispatch(fetchPatchBooking({
+      bookingId,
+      data,
+    })
     );
   };
 
@@ -61,17 +44,13 @@ const BookingTable = () => {
       okText: "Yes, Delete",
       okType: "danger",
       cancelText: "Cancel",
-      onOk: () => {
-        dispatch(fetchDeleteBooking(bookingId));
-      },
+      onOk: () => dispatch(fetchDeleteBooking(bookingId)),
     });
   };
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-[24px] text-gray-600">Loading...</p>
-      </div>
+      <IsLoading />
     );
   }
 
@@ -84,72 +63,63 @@ const BookingTable = () => {
       </div>
 
       <div className="border border-gray-300 rounded-[12px] overflow-hidden bg-white shadow-sm">
-        <div className="grid grid-cols-9 bg-gray-100 text-gray-700 font-semibold">
-          <div className="p-4 text-center border-r">Customer</div>
-          <div className="p-4 text-center border-r">Service</div>
-          <div className="p-4 text-center border-r">Sub-Services</div>
-          <div className="p-4 text-center border-r">Start</div>
-          <div className="p-4 text-center border-r">End</div>
-          <div className="p-4 text-center border-r">Date</div>
-          <div className="p-4 text-center border-r">Employee</div>
-          <div className="p-4 text-center border-r">Status</div>
-          <div className="p-4 text-center">Actions</div>
-        </div>
+        <BookingTableHeader />
 
         {bookingsData && bookingsData.length > 0 ? (
           bookingsData.map((booking, ind) => {
             const isCompleted = booking.status === "completed";
+            const isCanceled = booking.status === "canceled";
 
             return (
               <div
-                key={booking._id || ind}
-                className={`grid grid-cols-9 border-t border-gray-200 items-center text-gray-600 hover:bg-gray-50 transition-colors ${
-                  isCompleted
-                    ? "opacity-70 bg-gray-50"
-                    : ind % 2 === 0
+                key={booking._id}
+                className={`grid grid-cols-8 border-t border-gray-200 items-center text-gray-600 hover:bg-gray-50 transition-colors ${isCompleted || isCanceled
+                  ? "opacity-70 bg-gray-50"
+                  : ind % 2 === 0
                     ? "bg-white"
                     : "bg-gray-50"
-                }`}
+                  }`}
               >
                 <div className="p-4 text-center border-r">
                   <p className="text-[14px] font-medium text-gray-800">
                     {booking.customer?.phone || "Guest"}
                   </p>
                 </div>
-                <div className="p-4 text-center border-r">
-                  <p className="text-[14px] font-semibold text-gray-800">
-                    {booking.service?.name || "-"}
-                  </p>
-                </div>
+
                 <div className="p-4 text-center border-r">
                   <Select
                     mode="multiple"
                     allowClear
-                    className="w-full rounded-[8px]"
+                    className="w-full"
                     value={booking.subServices?.map((s) => s.name)}
                     onChange={(values) =>
-                      handleSubServicesChange(booking._id, values)
+                      handleChange(booking._id, {
+                        subServices: values,
+                      })
                     }
-                    disabled={isCompleted}
+                    disabled={isCompleted || isCanceled}
                     placeholder="Select sub-services"
                   >
-                    {booking.service?.subServices?.map((sub, idx) => (
-                      <Select.Option key={sub._id || idx} value={sub.name}>
+                    {booking.service?.subServices?.map((sub) => (
+                      <Select.Option key={sub._id} value={sub.name}>
                         {sub.name}
                       </Select.Option>
                     ))}
                   </Select>
                 </div>
+
                 <div className="p-4 text-center border-r">
                   <p className="text-[14px] font-semibold text-blue-600">
                     {booking.startTime}
                   </p>
                 </div>
+
                 <div className="p-4 text-center border-r">
                   <p className="text-[14px] font-semibold text-blue-600">
                     {booking.endTime}
                   </p>
                 </div>
+
                 <div className="p-4 text-center border-r">
                   <p className="text-[14px] text-gray-700">
                     {booking.date
@@ -157,21 +127,24 @@ const BookingTable = () => {
                       : "-"}
                   </p>
                 </div>
+
                 <div className="p-4 text-center border-r">
                   <Select
-                    className="w-full rounded-[8px]"
-                    value={booking.employee?.name}
+                    className="w-full"
+                    value={booking.employee?._id}
                     onChange={(value) =>
-                      handleEmployeeChange(booking._id, value)
+                      handleChange(booking._id, {
+                        employee: value,
+                      })
                     }
-                    disabled={isCompleted}
-                    optionLabelProp="label"
+                    disabled={isCompleted || isCanceled}
                     placeholder="Select employee"
+                    optionLabelProp="label"
                   >
                     {employeesData.map((emp) => (
                       <Select.Option
                         key={emp._id}
-                        value={emp.name}
+                        value={emp._id}
                         label={
                           <div className="flex items-center gap-2">
                             <Avatar src={emp.img} size="small">
@@ -191,12 +164,15 @@ const BookingTable = () => {
                     ))}
                   </Select>
                 </div>
+
                 <div className="p-4 text-center border-r">
                   <Select
-                    className="w-full rounded-[8px]"
+                    className="w-full"
                     value={booking.status}
-                    onChange={(value) => handleStatusChange(booking._id, value)}
-                    disabled={isCompleted}
+                    onChange={(value) =>
+                      handleChange(booking._id, { status: value })
+                    }
+                    disabled={isCompleted || isCanceled}
                   >
                     <Select.Option value="pending">
                       <Tag color="orange">Pending</Tag>
@@ -209,12 +185,13 @@ const BookingTable = () => {
                     </Select.Option>
                   </Select>
                 </div>
+
                 <div className="p-4 text-center">
                   <Button
                     danger
                     icon={<DeleteOutlined />}
                     onClick={() => handleDelete(booking._id)}
-                    disabled={isCompleted}
+                    disabled={isCompleted || isCanceled}
                     className="rounded-[8px]"
                   >
                     Delete
@@ -224,9 +201,7 @@ const BookingTable = () => {
             );
           })
         ) : (
-          <div className="p-12 text-center">
-            <p className="text-[20px] text-gray-500">No bookings found.</p>
-          </div>
+          <NoBookingFound />
         )}
       </div>
     </div>
