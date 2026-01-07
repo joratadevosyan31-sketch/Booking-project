@@ -13,6 +13,28 @@ const BookingSalonInfo = () => {
     }
   }, [dispatch, salonData]);
 
+
+
+  const isSalonOpen = (start, end) => {
+    if (!start || !end) return false
+
+    const now = new Date()
+
+    const [startHour, startMinute] = start.split(':').map(Number)
+    const [endHour, endMinute] = end.split(':').map(Number)
+
+    const startTime = new Date()
+    startTime.setHours(startHour, startMinute, 0)
+
+    const endTime = new Date()
+    endTime.setHours(endHour, endMinute, 0)
+
+    return now >= startTime && now <= endTime
+  }
+
+  const isOpen = isSalonOpen(salonData?.workStart, salonData?.workEnd)
+
+
   return (
     <div className="flex items-center gap-5">
       <img
@@ -28,7 +50,13 @@ const BookingSalonInfo = () => {
             <Rate disabled defaultValue={5} />
             <span className="text-purple-600">(2340)</span>
           </div>
-          <p className="text-green-700">{`Open until ${salonData.workEnd}`}</p>
+          {
+            isOpen ? (
+              <p className="text-green-700">{`Open until ${salonData.workEnd}`}</p>
+            ) : (
+              <p className="text-red-500">Closed until {salonData?.workStart}</p>
+            )
+          }
           <p>{salonData.address}</p>
         </div>
       </div>

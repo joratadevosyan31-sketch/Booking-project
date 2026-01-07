@@ -6,7 +6,7 @@ export const fetchGetAvailableSlots = createAsyncThunk("availableSlotsData/fetch
     console.log(empId);
 
     try {
-        const response = await instance.get(`slots/available-slots?employeeId=${empId}`)
+        const response = await instance.get(`availability/available-slots?employeeId=${empId}`)
         const result = response.data
 
         console.log(result);

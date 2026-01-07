@@ -6,7 +6,7 @@ import SuccessBookingModal from '../../../Modal/userModal/SuccessBookingModal/Su
 import BookingSalonInfo from './BookingSalonInfo'
 import Login from '../../../Modal/userModal/LoginModal/Login'
 import { fetchCreateBooking } from '../../../store/slice/BookingCardDataState/BookingCardApi'
-import { clearBooking } from '../../../store/slice/BookingCardDataState/BookingCardDataSlice'
+import { clearBooking, clearBookingDateTime } from '../../../store/slice/BookingCardDataState/BookingCardDataSlice'
 
 const BookingCard = () => {
 
@@ -28,6 +28,7 @@ const BookingCard = () => {
 
         return () => {
             document.body.style.overflow = "auto"
+            dispatch(clearBookingDateTime())
         }
     }, [isLoginOpen, isBookingSuccess])
 
@@ -65,14 +66,13 @@ const BookingCard = () => {
             return
         }
 
-        console.log({
-            service: subServices[0].service,
-            subServices: subServices.map(sub => sub._id),
-            employee: employee._id,
-            date,
-            startTime,
-        });
-
+        // console.log({
+        //     service: subServices[0].service,
+        //     subServices: subServices.map(sub => sub._id),
+        //     employee: employee._id,
+        //     date,
+        //     startTime,
+        // });
 
         setErrorMessage("")
         dispatch(fetchCreateBooking({
@@ -92,7 +92,6 @@ const BookingCard = () => {
     }
 
 
-
     return (
         <>
             <div className="border-[2px] border-gray rounded-[12px] p-[20px] sticky top-28 h-fit">
@@ -106,24 +105,14 @@ const BookingCard = () => {
                                     className="flex justify-between border-b border-gray pb-3"
                                 >
                                     <div className="flex flex-col gap-1">
-                                        <p className="text-[20px] font-medium">
-                                            {sub.name}
-                                        </p>
-
+                                        <p className="text-[20px] font-medium">{sub.name}</p>
                                         {employee && (
-                                            <p className="text-[18px] text-gray-600">
-                                                With {employee.name}
-                                            </p>
+                                            <p className="text-[18px] text-gray-600">With {employee.name}</p>
                                         )}
-
-                                        <p className="text-[16px] text-gray-600">
-                                            {sub.duration} min
-                                        </p>
+                                        <p className="text-[16px] text-gray-600">{sub.duration} min</p>
                                     </div>
 
-                                    <p className="text-[20px] font-medium">
-                                        {sub.price} AMD
-                                    </p>
+                                    <p className="text-[20px] font-medium">{sub.price} AMD</p>
                                 </div>
                             ))}
                         </div>
@@ -132,26 +121,25 @@ const BookingCard = () => {
                     )}
                 </div>
 
-                <div className="flex justify-between border-t-2 py-6">
+                <div className="flex flex-col border-t-2 py-6 gap-2">
                     <div className="flex flex-col gap-1">
                         <p className="text-gray-600">
                             {date && startTime
                                 ? `${date} at ${startTime}`
                                 : "No date/time selected"}
                         </p>
-
-                        <span>Total</span>
-
                         {totalDuration > 0 && (
                             <span className="text-sm text-gray-600">
                                 {totalDuration} min
                             </span>
                         )}
                     </div>
-
-                    <span>
-                        {totalPrice > 0 ? `${totalPrice} AMD` : "Free"}
-                    </span>
+                    <div className='flex items-center justify-between'>
+                        <span>Total</span>
+                        <span>
+                            {totalPrice > 0 ? `${totalPrice} AMD` : "Free"}
+                        </span>
+                    </div>
                 </div>
 
                 <div className='flex flex-col gap-3 '>
@@ -163,8 +151,7 @@ const BookingCard = () => {
                     <button
                         onClick={handleBookingAction}
                         disabled={!subServices || subServices.length === 0}
-                        className="w-full bg-black text-white text-[24px] py-5 rounded-[25px]
-                        disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        className="w-full bg-black text-white text-[24px] py-5 rounded-[25px] disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
                         {isFinalStep ? "Book now" : "Continue"}
                     </button>

@@ -20,14 +20,13 @@ const TimeSlots = () => {
         (state) => state.availableSlotsData
     );
 
-    // Fetch available slots whenever employee changes
+   
     useEffect(() => {
         if (employee?._id) {
             dispatch(fetchGetAvailableSlots({ empId: employee._id }));
         }
     }, [dispatch, employee]);
 
-    // Auto-select first available day when availableDays update
     useEffect(() => {
         if (availableDays?.length && !date) {
             dispatch(setSelectedDate(availableDays[0]));
@@ -35,7 +34,7 @@ const TimeSlots = () => {
         }
     }, [availableDays, date, dispatch]);
 
-    // Clear booking data on unmount
+ 
     useEffect(() => {
         return () => {
             dispatch(clearBookingDateTime());

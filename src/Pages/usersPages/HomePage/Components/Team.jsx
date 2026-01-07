@@ -26,7 +26,7 @@ const Team = () => {
                     {
                         employeesData.map((emp, ind) => (
                             <div key={ind} className="flex flex-col items-center justify-center gap-2">
-                                <img src={`${emp.img}`} className="size-18 object-cover rounded-full" />
+                                <img src={`${emp.img}`} className="size-18 object-cover flex-1 rounded-full" />
                                 <h4 className="text-[20px] font-bold">{emp.name}</h4>
                                 <p className="text-[18px]">{emp.profession}</p>
                             </div>

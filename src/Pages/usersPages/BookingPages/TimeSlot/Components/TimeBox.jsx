@@ -6,11 +6,10 @@ const TimeBox = ({ slotsByDay, startTime, handleTimeSelect, employee, date, setS
     useEffect(() => {
         const sortedDates = Object.keys(slotsByDay).sort();
 
-        // Try to get current date slots first
+
         let selectedSlots = slotsByDay[date] || [];
         let newSelectedDate = date;
 
-        // If no slots for current date, find first next date with slots
         if (!selectedSlots || selectedSlots.length === 0) {
             const nextAvailableDate = sortedDates.find(d => slotsByDay[d]?.length > 0);
             if (nextAvailableDate) {
@@ -21,12 +20,11 @@ const TimeBox = ({ slotsByDay, startTime, handleTimeSelect, employee, date, setS
 
         setAvailableByDays(selectedSlots);
 
-        // Auto-update parent selected date
         if (setSelectedDate && newSelectedDate !== date) {
             setSelectedDate(newSelectedDate);
         }
 
-        // Auto-select first available slot if current startTime not in slots
+
         if (selectedSlots.length > 0 && !selectedSlots.includes(startTime)) {
             handleTimeSelect(selectedSlots[0]);
         }

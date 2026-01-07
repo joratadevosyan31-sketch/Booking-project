@@ -178,7 +178,9 @@ const SalonPage = () => {
                     </div> */}
                 </div>
             </div>
-            <StatisticChart />
+            <div className="mt-7 ml-7">
+                <StatisticChart />
+            </div>
         </div>
     );
 };
