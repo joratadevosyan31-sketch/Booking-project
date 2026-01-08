@@ -107,7 +107,7 @@ const SalonPage = () => {
                         onClick={handleEdit}
                         className="bg-slate-600 hover:bg-slate-700 border-none rounded-[12px] px-6 py-2 h-auto text-[16px]"
                     >
-                        Edit Settings
+                        Edit Salon
                     </Button>
                 ) : (
                     <div className="flex gap-3">

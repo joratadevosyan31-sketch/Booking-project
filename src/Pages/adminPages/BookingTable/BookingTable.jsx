@@ -6,17 +6,24 @@ import { DeleteOutlined } from "@ant-design/icons";
 import NoBookingFound from "./Components/NoBookingFound";
 import BookingTableHeader from "./Components/BookingTableHeader";
 import IsLoading from "../../../Components/IsLoading";
+
 import {
   fetchDeleteBooking,
   fetchGetBookings,
   fetchPatchBooking,
 } from "../../../store/slice/BookingsDataState/BookingsDataApi";
-import { fetchGetBookingAvailability } from "../../../store/slice/BookingAvailabilityDataState/BookingAvailabilityDataApi";
+
+import {
+  fetchGetBookingAvailability,
+} from "../../../store/slice/BookingAvailabilityDataState/BookingAvailabilityDataApi";
 
 const BookingTable = () => {
   const dispatch = useDispatch();
 
-  const { bookingsData, isLoading } = useSelector((state) => state.bookingsData);
+  const { bookingsData, isLoading } = useSelector(
+    (state) => state.bookingsData
+  );
+
   const { availableEmployees, availableSubServices } = useSelector(
     (state) => state.bookingAvailabilities
   );
@@ -28,7 +35,7 @@ const BookingTable = () => {
   }, [dispatch, bookingsData]);
 
   const handleChange = (bookingId, data) => {
-    dispatch(fetchPatchBooking({ id: bookingId, data }));
+    dispatch(fetchPatchBooking({ bookingId, data }));
   };
 
   const handleDelete = (bookingId) => {
@@ -56,65 +63,12 @@ const BookingTable = () => {
 
   if (isLoading) return <IsLoading />;
 
-  const renderSubServiceSelect = (booking, isDisabled) => (
-    <Select
-      mode="multiple"
-      allowClear
-      className="w-full"
-      value={booking.subServices?.map((s) => s.name) || []}
-      onChange={(selectedNames) => {
-        const updatedSubServices = availableSubServices.filter((sub) =>
-          selectedNames.includes(sub.name)
-        );
-        handleChange(booking._id, { subServices: updatedSubServices });
-      }}
-      disabled={isDisabled}
-      placeholder="Select sub-services"
-    >
-      {availableSubServices.map((sub) => (
-        <Select.Option key={sub._id} value={sub.name}>
-          {sub.name}
-        </Select.Option>
-      ))}
-    </Select>
-  );
-
-  const renderEmployeeSelect = (booking, isDisabled) => (
-    <Select
-      className="w-full"
-      value={booking.employee?._id}
-      onChange={(employeeId) => {
-        const selectedEmployee = availableEmployees.find((emp) => emp._id === employeeId);
-        handleChange(booking._id, { employee: selectedEmployee });
-      }}
-      disabled={isDisabled}
-      placeholder="Select employee"
-      optionLabelProp="label"
-    >
-      {availableEmployees.map((emp) => (
-        <Select.Option
-          key={emp._id}
-          value={emp._id}
-          label={
-            <div className="flex items-center gap-2">
-              <Avatar src={emp.img} size="small">{emp.name?.[0]}</Avatar>
-              <span>{emp.name}</span>
-            </div>
-          }
-        >
-          <div className="flex items-center gap-2">
-            <Avatar src={emp.img} size="small">{emp.name?.[0]}</Avatar>
-            <span>{emp.name}</span>
-          </div>
-        </Select.Option>
-      ))}
-    </Select>
-  );
-
   return (
     <div className="w-full">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-[36px] font-bold text-gray-800">Bookings Management</h2>
+        <h2 className="text-[36px] font-bold text-gray-800">
+          Bookings Management
+        </h2>
       </div>
 
       <div className="border border-gray-300 rounded-[12px] overflow-hidden bg-white shadow-sm">
@@ -122,7 +76,9 @@ const BookingTable = () => {
 
         {bookingsData && bookingsData.length > 0 ? (
           bookingsData.map((booking, index) => {
-            const isDisabled = booking.status === "completed" || booking.status === "canceled";
+            const isDisabled =
+              booking.status === "completed" ||
+              booking.status === "canceled";
 
             return (
               <div
@@ -135,40 +91,127 @@ const BookingTable = () => {
                   }`}
                 onClick={() => fetchAvailability(booking)}
               >
+                {/* Phone */}
                 <div className="p-4 text-center border-r">
                   <p className="text-[14px] font-medium text-gray-800">
                     {booking.customer?.phone || "Guest"}
                   </p>
                 </div>
 
+                {/* SubServices */}
                 <div className="p-4 text-center border-r">
-                  {renderSubServiceSelect(booking, isDisabled)}
+                  <Select
+                    mode="multiple"
+                    allowClear
+                    className="w-full"
+                    disabled={isDisabled}
+                    placeholder="Select sub-services"
+                    value={booking.subServices?.map((s) => s._id) || []}
+                    onChange={(selectedIds) => {
+                      handleChange(booking._id, {
+                        subServices: selectedIds, // ✅ FIX
+                      });
+                    }}
+                  >
+                    {availableSubServices.map((sub) => (
+                      <Select.Option key={sub._id} value={sub._id}>
+                        {sub.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
                 </div>
 
+                {/* Start Time */}
                 <div className="p-4 text-center border-r">
-                  <p className="text-[14px] font-semibold text-blue-600">{booking.startTime}</p>
-                </div>
-
-                <div className="p-4 text-center border-r">
-                  <p className="text-[14px] font-semibold text-blue-600">{booking.endTime}</p>
-                </div>
-
-                <div className="p-4 text-center border-r">
-                  <p className="text-[14px] text-gray-700">
-                    {booking.date ? new Date(booking.date).toLocaleDateString() : "-"}
+                  <p className="text-[14px] font-semibold text-blue-600">
+                    {booking.startTime}
                   </p>
                 </div>
 
+                {/* End Time */}
                 <div className="p-4 text-center border-r">
-                  {renderEmployeeSelect(booking, isDisabled)}
+                  <p className="text-[14px] font-semibold text-blue-600">
+                    {booking.endTime}
+                  </p>
                 </div>
 
+                {/* Date */}
+                <div className="p-4 text-center border-r">
+                  <p className="text-[14px] text-gray-700">
+                    {booking.date
+                      ? new Date(booking.date).toLocaleDateString()
+                      : "-"}
+                  </p>
+                </div>
+
+                {/* Employee */}
+                <div className="p-4 text-center border-r">
+                  <Select
+                    className="w-full"
+                    labelInValue
+                    disabled={isDisabled}
+                    placeholder="Select employee"
+                    value={
+                      booking.employee
+                        ? {
+                          value: booking.employee._id,
+                          label: (
+                            <div className="flex items-center gap-2">
+                              <Avatar
+                                src={booking.employee.img}
+                                size="small"
+                              >
+                                {booking.employee.name?.[0]}
+                              </Avatar>
+                              <span>{booking.employee.name}</span>
+                            </div>
+                          ),
+                        }
+                        : undefined
+                    }
+                    onChange={(val) => {
+                      const selectedEmployee =
+                        availableEmployees.find(
+                          (emp) => emp._id === val.value
+                        );
+                      handleChange(booking._id, {
+                        employee: selectedEmployee,
+                      });
+                    }}
+                  >
+                    {availableEmployees.map((emp) => (
+                      <Select.Option
+                        key={emp._id}
+                        value={emp._id}
+                        label={
+                          <div className="flex items-center gap-2">
+                            <Avatar src={emp.img} size="small">
+                              {emp.name?.[0]}
+                            </Avatar>
+                            <span>{emp.name}</span>
+                          </div>
+                        }
+                      >
+                        <div className="flex items-center gap-2">
+                          <Avatar src={emp.img} size="small">
+                            {emp.name?.[0]}
+                          </Avatar>
+                          <span>{emp.name}</span>
+                        </div>
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </div>
+
+                {/* Status */}
                 <div className="p-4 text-center border-r">
                   <Select
                     className="w-full"
                     value={booking.status}
-                    onChange={(status) => handleChange(booking._id, { status })}
                     disabled={isDisabled}
+                    onChange={(status) =>
+                      handleChange(booking._id, { status })
+                    }
                   >
                     <Select.Option value="pending">
                       <Tag color="orange">Pending</Tag>
@@ -182,12 +225,13 @@ const BookingTable = () => {
                   </Select>
                 </div>
 
+                {/* Delete */}
                 <div className="p-4 text-center">
                   <Button
                     danger
                     icon={<DeleteOutlined />}
-                    onClick={() => handleDelete(booking._id)}
                     disabled={isDisabled}
+                    onClick={() => handleDelete(booking._id)}
                     className="rounded-[8px]"
                   >
                     Delete
