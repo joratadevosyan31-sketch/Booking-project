@@ -5,6 +5,8 @@ import { fetchGetServicesData } from "../../../store/slice/ServicesDataState/Ser
 import { setProfessional, toggleSubservice, clearSelectedSubservices } from "../../../store/slice/BookingCardDataState/BookingCardDataSlice";
 import PluseIcon from "../../../Components/icons/PluseIcon";
 import CheckedIcon from "../../../Components/icons/CheckedIcon";
+import { useSearchParams } from "react-router";
+
 
 const btnSettings = {
     dots: false,
@@ -34,9 +36,14 @@ const btnSettings = {
     ]
 };
 
+
 const SelectService = () => {
 
     const dispatch = useDispatch();
+    const [employeeParams] = useSearchParams();
+
+    console.log(employeeParams.get("employeeId"));
+
     const { servicesData } = useSelector((state) => state.servicesData);
     const { subServices } = useSelector((state) => state.bookingCardData);
     const [selectedService, setSelectedService] = useState(null);
@@ -89,6 +96,7 @@ const SelectService = () => {
             dispatch(setProfessional(null));
         }
     };
+
 
     return (
         <div id="services">
