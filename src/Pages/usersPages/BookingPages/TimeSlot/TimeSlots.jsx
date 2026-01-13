@@ -9,12 +9,14 @@ import {
     setSelectedTime,
 } from "../../../../store/slice/BookingCardDataState/BookingCardDataSlice";
 import { fetchGetAvailableSlots } from "../../../../store/slice/AvailableSlotsDataState/AvailableSlotsDataApi";
+import { fetchCreateBooking } from "../../../../store/slice/BookingCardDataState/BookingCardApi";
 
 const TimeSlots = () => {
 
     const dispatch = useDispatch();
 
-    const { date, startTime, employee } = useSelector((state) => state.bookingCardData);
+    const { subServices, employee, date, startTime } = useSelector((state) => state.bookingCardData);
+
     const { availableDays, slotsByDay } = useSelector((state) => state.availableSlotsData);
 
     useEffect(() => {
@@ -43,6 +45,14 @@ const TimeSlots = () => {
 
     const handleTimeSelect = (selectedTime) => {
         dispatch(setSelectedTime(selectedTime));
+
+        dispatch(fetchCreateBooking({
+                    service: subServices[0].service,
+                    subServices: subServices.map(sub => sub._id),
+                    employee: employee._id,
+                    date,
+                    startTime,
+                }))
     };
 
     return (
