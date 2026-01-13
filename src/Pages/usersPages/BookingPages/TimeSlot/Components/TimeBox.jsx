@@ -4,9 +4,8 @@ const TimeBox = ({ slotsByDay, startTime, handleTimeSelect, employee, date, setS
     const [availableByDays, setAvailableByDays] = useState([]);
 
     useEffect(() => {
+
         const sortedDates = Object.keys(slotsByDay).sort();
-
-
         let selectedSlots = slotsByDay[date] || [];
         let newSelectedDate = date;
 
@@ -24,10 +23,10 @@ const TimeBox = ({ slotsByDay, startTime, handleTimeSelect, employee, date, setS
             setSelectedDate(newSelectedDate);
         }
 
-
         if (selectedSlots.length > 0 && !selectedSlots.includes(startTime)) {
             handleTimeSelect(selectedSlots[0]);
         }
+
     }, [date, slotsByDay, startTime, handleTimeSelect, setSelectedDate]);
 
     return (

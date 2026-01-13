@@ -5,12 +5,14 @@ import {
   fetchGetEmployeesData,
   fetchCreateEmployee,
   fetchUpdateEmployee,
+  fetchGetEmployeeById,
 } from "./EmployeeApi";
 
 const EmployeeDataSlice = createSlice({
   name: "employeesData",
   initialState: {
     isLoading: false,
+    employee: null,
     employeesData: [],
     employeebyService: [],
     isError: false,
@@ -26,6 +28,18 @@ const EmployeeDataSlice = createSlice({
         state.employeesData = payload.employees;
       })
       .addCase(fetchGetEmployeesData.rejected, (state, { payload }) => {
+        state.isLoading = false;
+        state.isError = payload;
+      })
+
+      .addCase(fetchGetEmployeeById.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchGetEmployeeById.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.employee = payload.employee;
+      })
+      .addCase(fetchGetEmployeeById.rejected, (state, { payload }) => {
         state.isLoading = false;
         state.isError = payload;
       })

@@ -108,6 +108,7 @@ const BookingCardDataSlice = createSlice({
             state.startTime = null;
             clearBookingDateTimeFromLocalStorage()
         },
+
     },
     extraReducers: (builder) => {
         builder

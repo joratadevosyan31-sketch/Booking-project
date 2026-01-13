@@ -2,7 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import Home from "../Pages/usersPages/HomePage/Home"
 import BookingLayout from "../Layout/userLayout/BookingLayout"
 import SelectProfessional from "../Pages/usersPages/BookingPages/SelectProfessional"
-import SelectService from "../Pages/usersPages/BookingPages/SelectService"
+import SelectService from '../Pages/usersPages/BookingPages/SelectService/SelectService'
 import TimeSlots from "../Pages/usersPages/BookingPages/TimeSlot/TimeSlots"
 
 const UserPageRouts = () => {

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CalendarBox from "./Components/CalendarBox";
 import ChangeProfessional from "./Components/ChangeProfessional";
@@ -11,16 +11,12 @@ import {
 import { fetchGetAvailableSlots } from "../../../../store/slice/AvailableSlotsDataState/AvailableSlotsDataApi";
 
 const TimeSlots = () => {
+
     const dispatch = useDispatch();
 
-    const { date, startTime, employee } = useSelector(
-        (state) => state.bookingCardData
-    );
-    const { availableDays, slotsByDay } = useSelector(
-        (state) => state.availableSlotsData
-    );
+    const { date, startTime, employee } = useSelector((state) => state.bookingCardData);
+    const { availableDays, slotsByDay } = useSelector((state) => state.availableSlotsData);
 
-   
     useEffect(() => {
         if (employee?._id) {
             dispatch(fetchGetAvailableSlots({ empId: employee._id }));
@@ -30,11 +26,10 @@ const TimeSlots = () => {
     useEffect(() => {
         if (availableDays?.length && !date) {
             dispatch(setSelectedDate(availableDays[0]));
-            dispatch(setSelectedTime(null));
+            dispatch(setSelectedTime(null))
         }
     }, [availableDays, date, dispatch]);
 
- 
     useEffect(() => {
         return () => {
             dispatch(clearBookingDateTime());
@@ -72,7 +67,7 @@ const TimeSlots = () => {
                         handleTimeSelect={handleTimeSelect}
                         employee={employee}
                         date={date}
-                        setSelectedDate={handleDateSelect} // for auto-select next available day
+                        setSelectedDate={handleDateSelect}
                     />
                 </div>
             </div>

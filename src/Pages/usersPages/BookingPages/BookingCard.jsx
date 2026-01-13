@@ -32,13 +32,11 @@ const BookingCard = () => {
         }
     }, [isLoginOpen, isBookingSuccess])
 
-
     const totalPrice =
         subServices?.reduce((sum, s) => sum + (s.price || 0), 0) || 0
 
     const totalDuration =
         subServices?.reduce((sum, s) => sum + (s.duration || 0), 0) || 0
-
 
     const handleBookingAction = () => {
 

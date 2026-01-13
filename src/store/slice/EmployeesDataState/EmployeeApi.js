@@ -16,22 +16,36 @@ export const fetchGetEmployeesData = createAsyncThunk(
   }
 );
 
-export const fetchGetEmployeeByService = createAsyncThunk(
-  "employeesData/fetchGetEmployeeByService",
-  async ({ serviceId }) => {
-    try {
-      console.log(serviceId);
+export const fetchGetEmployeeById = createAsyncThunk("employeesData/fetchGetEmployeeById", async (employeeId, { rejectWithValue }) => {
+  try {
+    const response = await instance.get(`/employees/${employeeId}`);
+    const result = response.data
+    console.log(result);
 
-      const responce = await instance.get(`/employees/service/${serviceId}`);
-      const result = responce.data;
-      console.log(result);
 
-      return result;
-    } catch (error) {
-      console.log("fetchGetEmployeeByService error :", error);
-      throw error;
-    }
+    return result
+  } catch (error) {
+    console.error("fetchGetEmployeeById error:", error);
+    return rejectWithValue(error.response?.data);
   }
+}
+);
+
+
+export const fetchGetEmployeeByService = createAsyncThunk("employeesData/fetchGetEmployeeByService", async ({ serviceId }) => {
+  try {
+    console.log(serviceId);
+
+    const responce = await instance.get(`/employees/service/${serviceId}`);
+    const result = responce.data;
+    console.log(result);
+
+    return result;
+  } catch (error) {
+    console.log("fetchGetEmployeeByService error :", error);
+    throw error;
+  }
+}
 );
 
 export const fetchDeleteEmployee = createAsyncThunk("employeeData/fetchDeleteEmployee", async (employeeId, { rejectWithValue }) => {
